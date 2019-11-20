@@ -1,34 +1,35 @@
 SHELL=/bin/bash
 
-all: es08 es07 es06 es05 es04 es02 es01 example
+all: es08.exe es07.exe es06.exe es05.exe es04.exe es02.exe es01.exe example.exe
 
-es08: es08.c
-	gcc -o es08 es08.c
+es08.exe: es08.c
+	gcc -o es08.exe es08.c
 
-es07: es07.c
-	gcc -o es07 es07.c
+es07.exe: es07.c
+	gcc -o es07.exe es07.c
 
-es06: es06.c
-	gcc -o es06 es06.c
+es06.exe: es06.c
+	gcc -o es06.exe es06.c
 
-es05: es05.c
-	gcc -o es05 es05.c
+es05.exe: es05.c
+	gcc -o es05.exe es05.c
 
-es04: es04.c
-	gcc -o es04 es04.c
+es04.exe: es04.c
+	gcc -o es04.exe es04.c
 
-es02: es02.c test02.txt
-	gcc -o es02 es02.c
+es02.exe: es02.c test02.txt
+	gcc -o es02.exe es02.c
 
 test02.txt:
 	if [[ ! -f test02.txt ]]; then touch test02.txt; fi
 
-es01: es01.c
-	gcc -o es01 es01.c
+es01.exe: es01.c
+	gcc -o es01.exe es01.c
 
-example: example.c
-	gcc -o example example.c
+example.exe: example.c
+	gcc -o example.exe example.c
 
 clean:
-	rm es08 es07 es06 es05 es04 es02 test02.txt es01 example
+	rm es08.exe es07.exe es06.exe es05.exe es04.exe es02.exe test02.txt \
+		es01.exe example.exe
 
