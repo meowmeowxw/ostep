@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/wait.h>
 
 int main(int argc, char **argv)
 {
@@ -13,12 +16,19 @@ int main(int argc, char **argv)
 	} else if (fork_rc == 0)
 	{
 		printf("child time : %d\n", (int)getpid());
+		// close(1);
 		close(STDOUT_FILENO);
-		printf("try\n");
+		puts("YOLO");
 	} else 
 	{
 		wait_rc = wait(NULL);
 		printf("parent time : %d\n", (int)getpid());
+		if (wait_rc == -1)
+		{
+			printf("errno : %s\n", strerror(errno));
+		}
+
 	}
 	return 0;
 }
+
