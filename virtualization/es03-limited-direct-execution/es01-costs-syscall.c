@@ -12,7 +12,6 @@
 long int cost(unsigned int nbytes)
 {
 	char buf[1];
-	int fd;
 	// defined in /usr/include/bits/types/struct_timespec.h
 	struct timespec start, end;
 	if(clock_gettime(CLOCK_REALTIME, &start) == -1)
@@ -38,7 +37,6 @@ void statistics()
 {
 	int nbytes[] = {100, 1000, 10000, 100000};
 	long int average_nsec[sizeof(nbytes) / sizeof(int)] = {0};
-	long int ts[STATS];
 	for(int i = 0; i < sizeof(nbytes) / sizeof(int); i++)
 	{
 		for(int j = 0; j < STATS; j++)
