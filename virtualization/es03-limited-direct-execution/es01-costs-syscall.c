@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <time.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 
 #define STATS 200
 #define BILLION 1000000000L
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
 }
 
 /*
+ * asm inline to compute syscall cost, doesn't work.
 void syscall_time()
 {
 	int a = 10;
@@ -81,5 +82,4 @@ void syscall_time()
 	printf("%d\n", b);
 }
 */
-
 
