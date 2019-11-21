@@ -37,7 +37,10 @@ void statistics()
 {
 	int nbytes[] = {100, 1000, 10000, 100000};
 	long int average_nsec[sizeof(nbytes) / sizeof(int)] = {0};
-	for(int i = 0; i < sizeof(nbytes) / sizeof(int); i++)
+	int length = sizeof(nbytes) / sizeof(int);
+	long int average = 0;
+
+	for(int i = 0; i < length; i++)
 	{
 		for(int j = 0; j < STATS; j++)
 		{
@@ -45,22 +48,20 @@ void statistics()
 		}
 		average_nsec[i] /= STATS;	
 		printf("average for read %d times : %ld ns\n", \
-				nbytes[i], (long int)(average_nsec[i]));
+				nbytes[i], (average_nsec[i]));
 	}
-	long int average = 0;
-	for(int i = 0; i < sizeof(average_nsec) / sizeof(long int); i++)
+	for(int i = 0; i < length; i++)
 	{
 		average += average_nsec[i];
 	}
-	printf("average total : %ld ns\n", average / (sizeof(average_nsec) / \
-				sizeof(long int)));
+	printf("average total : %ld ns\n", average / length);
 	return;
 }
 int main(int argc, char **argv)
 {
 	statistics();
-	puts("without the stats the results would be a bit higher (around 400 ns) \
-	on my machine, while with stats I got around 350 ns");
+	printf("without STATS the result would be a bit higher (around 400 ns) ");
+	printf("on my machine, while with STATS is around 350 ns.\n");
 	return 0;
 }
 
