@@ -6,38 +6,53 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define BILLION 1000000000L
+#define LENGTH_BYTES 3
+#define STATS 100
 
-void cost()
+struct timespec cost(unsigned int nbytes)
 {
 	char buf[1];
 	int fd;
-	time_t seconds;
-	long int nanoseconds;
 	// defined in /usr/include/bits/types/struct_timespec.h
-	struct timespec start, end;
-	fd = open("./01-test.txt", O_RDONLY);
+	struct timespec start, end, res;
 	if(clock_gettime(CLOCK_REALTIME, &start) == -1)
 	{
 		fprintf(stderr, "error in clock_getres\n");
 		exit(1);
 	}
-	read(fd, buf, sizeof(buf));
+	for(int i = 0; i < nbytes; i++)
+	{
+		read(STDIN_FILENO, buf, 0) ;
+	}
 	if(clock_gettime(CLOCK_REALTIME, &end) == -1)
 	{
 		fprintf(stderr, "error in clock_getres\n");
 		exit(1);
 	}
-	printf("%ld.%ld\n", start.tv_sec, start.tv_nsec);
-	printf("%ld.%ld\n", end.tv_sec, end.tv_nsec);
-	seconds = end.tv_sec - start.tv_sec;
-	nanoseconds = end.tv_nsec - start.tv_nsec;
-	printf("%ld\n", seconds);
-	printf("%ld\n", nanoseconds);
+	res.tv_sec = (end.tv_sec - start.tv_sec) / nbytes;
+	res.tv_nsec = (end.tv_nsec - start.tv_nsec) / nbytes;
+	return res;
+}
+void statistics()
+{
+	int nbytes[] = {100, 1000, 10000};
+	double average_nsec[] = {0, 0, 0};
+	struct timespec ts[STATS];
+	for(int i = 0; i < 3; i++)
+	{
+		for(int j = 0; j < STATS; j++)
+		{
+			ts[j] = cost(nbytes[i]);
+			average_nsec[i] += ts[j].tv_nsec;
+		}
+		printf("average for read %d times : %ld ns\n", \
+				nbytes[i], (double)(average_nsec[i] / STATS));
+	}
+	return;
 }
 int main(int argc, char **argv)
 {
-	cost();
+	statistics();
 	return 0;
 }
 
