@@ -135,3 +135,4 @@ We can use Gauss formula to sum the first `n` natural numbers.
 
 In this case if we have that a job take as long as `q`, where `q = time slice`,
 then the worst case is `((q-1) * q) / 2`.
+
