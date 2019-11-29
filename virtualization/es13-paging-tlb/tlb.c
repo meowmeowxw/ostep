@@ -20,8 +20,8 @@
 int main(int argc, char **argv)
 {
 	int i, j;
-	int a[NUM] = {0};
-	long int res;
+	int *a;
+	long int total_time;
 	cpu_set_t set;
 	struct timespec start, end;
 	/*
@@ -41,9 +41,22 @@ int main(int argc, char **argv)
 		fprintf(stderr, "couldn't pin the process on a particular cpu\n");
 		exit(2);
 	}
-	int npages = atoi(argv[1]);
+	long int npages = atoi(argv[1]);
 	int ntrials = atoi(argv[2]);
 	int jump = PAGESIZE / sizeof(int);
+	a = calloc((npages * jump), sizeof(int));
+	if(a == NULL)
+	{
+		fprintf(stderr, "malloc error\n");
+		exit(1);
+	}
+	/* 
+	 * access tlb first
+	 */
+	for(i = 0; i < (npages * jump); i += jump)
+	{
+		a[i] += 1;
+	}
 	/*	
 	 *	start the timer
 	 */
@@ -70,9 +83,13 @@ int main(int argc, char **argv)
 		fprintf(stderr, "error in clock_getres\n");
 		exit(3);
 	}
-	res = (BILLION * (end.tv_sec - start.tv_sec) + \
+	total_time = (BILLION * (end.tv_sec - start.tv_sec) + \
 				  (end.tv_nsec - start.tv_nsec)) / ntrials;
-	fprintf(stdout, "NPAGES: %d, TIME: %ld\n", npages, res);
+	
+	fprintf(stdout, "%ld,%g\n", npages, (double)total_time/npages);
+	//fprintf(stdout, "%ld,%ld\n", npages, total_time);
+	//fprintf(stdout, "NPAGES: %ld, TIME: %ld, AVERAGE: %g\n",
+	//		npages, total_time, (double)total_time/npages);
 	return 0;
 }
 
