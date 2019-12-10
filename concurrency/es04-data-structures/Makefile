@@ -18,6 +18,6 @@ counter.exe: counter.c
 
 .PHONY: clean
 
-clean: counter-lock-optimized.exe counter-lock.exe counter-no-lock.exe counter.exe
+clean:
 	rm counter-lock.exe counter-no-lock.exe counter.exe counter-lock-optimized.exe
 
