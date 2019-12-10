@@ -1,7 +1,11 @@
 LFLAGS=-lpthread
 CFLAGS=-Wall -Werror -g
 
-all: counter-lock.exe counter-no-lock.exe counter.exe
+all: counter-lock-optimized.exe counter-lock.exe counter-no-lock.exe counter.exe
+	
+counter-lock-optimized.exe: counter-lock-optimized.c
+	gcc ${CFLAGS} -o counter-lock-optimized.exe counter-lock-optimized.c \
+		${LFLAGS}
 
 counter-lock.exe: counter-lock.c
 	gcc ${CFLAGS} -o counter-lock.exe counter-lock.c ${LFLAGS}
@@ -14,6 +18,6 @@ counter.exe: counter.c
 
 .PHONY: clean
 
-clean: counter-lock.exe counter-no-lock.exe counter.exe
-	rm counter-lock.exe counter-no-lock.exe counter.exe
+clean: counter-lock-optimized.exe counter-lock.exe counter-no-lock.exe counter.exe
+	rm counter-lock.exe counter-no-lock.exe counter.exe counter-lock-optimized.exe
 
