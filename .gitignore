@@ -6,4 +6,5 @@
 *.tar
 *.gz
 *.gdb
+.gdb_history
 
