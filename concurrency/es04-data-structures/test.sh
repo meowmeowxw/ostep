@@ -1,9 +1,13 @@
 #!/bin/sh
 
 make
+echo "counter.exe"
 ./counter.exe
+echo "counter-lock.exe"
 ./counter-lock.exe
+echo "counter-no-lock.exe"
 ./counter-no-lock.exe
+echo "counter-lock-optimized.exe"
 ./counter-lock-optimized.exe
 # Timing on Intel i7-8565U (8)
 # > ./counter.exe 

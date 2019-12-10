@@ -2,12 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "mythreads.h"
 #include <sys/syscall.h>
 #include <sys/types.h>
-
-#define NUMCPU 8
-#define MAX 100000000
+#include "mythreads.h"
+#include "lib.h"
 
 typedef struct __counter_t 
 {
@@ -91,10 +89,13 @@ void* thread_increment(void *arg)
 counter_t c_t;
 
 int main(int argc, char **argv)
-{
+{	
+	struct timespec start, end;
+	long int total_time;
 	int threshold = MAX;
 	init(&c_t, threshold);
 	pthread_t pt[NUMCPU];
+	clock_gettime(CLOCK_REALTIME, &start);
 	for(int i = 0; i < NUMCPU; i++)
 	{
 		Pthread_create(&(pt[i]), NULL, thread_increment, &c_t);
@@ -104,9 +105,12 @@ int main(int argc, char **argv)
 	{
 		Pthread_join(pt[i], NULL);
 	}
-
+	clock_gettime(CLOCK_REALTIME, &end);
+	total_time = BILLION * (end.tv_sec - start.tv_sec) + \
+				 end.tv_nsec - start.tv_nsec;
 	printf("[*] expected value: %d\n", MAX * NUMCPU);
 	printf("[*] real value: %ld\n", c_t.global);
+	printf("[*] time: %ld ns\n", total_time);
 	return 0;
 }
 
