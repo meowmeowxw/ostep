@@ -2,8 +2,7 @@
 #include <stdlib.h>
 
 #define NUMCPU 8
-
-static long int MAX = 1000000000;
+#define MAX 100000000
 
 typedef struct __counter_t 
 {
@@ -38,7 +37,7 @@ int main(int argc, char **argv)
 	{
 		increment(&c_t);
 	}
-	printf("[*] expected value: %ld\n", MAX * NUMCPU);
+	printf("[*] expected value: %d\n", MAX * NUMCPU);
 	printf("[*] real value: %ld\n", c_t.value);
 	return 0;
 
