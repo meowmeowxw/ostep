@@ -12,6 +12,7 @@ void *printhello(void *arg)
 {
 	printf("received: %d\n", *(int *)arg);
 	pthread_exit (NULL);
+	free(arg);
 }
 
 int main()
