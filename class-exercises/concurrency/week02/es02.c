@@ -7,9 +7,9 @@
 
 #define NUM 3
 
-int T[NUM];
-int N[NUM];
-pthread_mutex_t lock;
+int T[NUM] = {0, 0, 0};
+int N[NUM] = {0, 0, 0};
+pthread_mutex_t lock[NUM];
 
 void *do_deposit(void *arg)
 {
@@ -18,10 +18,10 @@ void *do_deposit(void *arg)
 	while(1)
 	{
 		sleep(1);
-		Pthread_mutex_lock(&lock);
+		Pthread_mutex_lock(&lock[id]);
 		T[id] += 10;
 		N[id]++;
-		Pthread_mutex_unlock(&lock);
+		Pthread_mutex_unlock(&lock[id]);
 	}
 	free(arg);
 	pthread_exit(NULL);
@@ -33,10 +33,10 @@ void *do_withdrawal(void *arg)
 	while(1)
 	{
 		sleep(1);
-		Pthread_mutex_lock(&lock);
+		Pthread_mutex_lock(&lock[id]);
 		T[id] -= 9;
 		N[id]++;
-		Pthread_mutex_unlock(&lock);
+		Pthread_mutex_unlock(&lock[id]);
 	}
 	free(arg);
 	pthread_exit(NULL);
@@ -48,14 +48,15 @@ void *italybank(void *arg)
 	while(1)
 	{
 		sleep(5);
-		Pthread_mutex_lock(&lock);
 		for(i = 0; i < NUM; i++)
 		{
+			Pthread_mutex_lock(&lock[i]);
 			printf("N[%d]: %d\n", i, N[i]);
 			printf("T[%d]: %d\n", i, T[i]);
+			Pthread_mutex_unlock(&lock[i]);
 		}
-		Pthread_mutex_unlock(&lock);
 	}
+	pthread_exit(NULL);
 }
 
 int main(int argc, char **argv)
