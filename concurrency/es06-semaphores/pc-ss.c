@@ -27,17 +27,19 @@ int get()
 void* producer(void *arg)
 {
 	int i;
-	for(i = 0; i <= loop; i++)
+	for(i = 0; i <= loop * 3; i++)
 	{
 		sem_wait(&empty);
 		puts("producer put");
+		/*
 		if(i == loop)
 		{
 			put(-1);
 		}else
 		{
+		*/
 			put(i);
-		}
+		//}
 		sem_post(&full);
 	}
 	return NULL;
