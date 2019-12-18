@@ -3,11 +3,11 @@
 #include <semaphore.h>
 #include "mythreads.h"
 
-int MAX = 1;
-int buffer[1];
+int MAX = 2;
 int fill = 0;
 int use = 0;
 int loop = 20;
+int buffer[1];
 sem_t empty;
 sem_t full;
 
@@ -27,19 +27,11 @@ int get()
 void* producer(void *arg)
 {
 	int i;
-	for(i = 0; i <= loop * 3; i++)
+	for(i = 0; i <= loop; i++)
 	{
 		sem_wait(&empty);
 		puts("producer put");
-		/*
-		if(i == loop)
-		{
-			put(-1);
-		}else
-		{
-		*/
-			put(i);
-		//}
+		i != loop ? put(i) : put(-1);
 		sem_post(&full);
 	}
 	return NULL;
@@ -51,9 +43,8 @@ void* consumer(void *arg)
 	while(tmp != -1)
 	{
 		sem_wait(&full);
-		puts("consumer get");
 		tmp = get();
-		printf("value: %d\n", tmp);
+		printf("consumer get value: %d\n", tmp);
 		sem_post(&empty);
 		// printf("%d\n", tmp); error because tmp can change
 	}
