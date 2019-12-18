@@ -40,8 +40,7 @@ void *do_withdrawal(void *arg)
 	}
 	free(arg);
 	pthread_exit(NULL);
-}
-
+} 
 void *italybank(void *arg)
 {
 	int i;
@@ -65,6 +64,7 @@ int main(int argc, char **argv)
 	int deposit = 5;
 	int withdrawal = 4;
 	pthread_t pt;
+	Pthread_mutex_init(&lock, NULL);
 	for(i = 0; i < NUM; i++)
 	{
 		for(j = 0; j < deposit; j++)

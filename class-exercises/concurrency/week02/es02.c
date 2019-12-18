@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 	pthread_t pt;
 	for(i = 0; i < NUM; i++)
 	{
+		Pthread_mutex_init(&lock[i], NULL);
 		for(j = 0; j < deposit; j++)
 		{
 			x = Malloc(sizeof(int));
