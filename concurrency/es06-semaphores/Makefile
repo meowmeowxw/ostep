@@ -4,7 +4,8 @@ LFLAGS=-lpthread
 SRCS	:= ./pc-ss.c \
 	./pc-multiple-ss.c \
 	./dining-philosophers.c \
-	./es01-fork-join.c
+	./es01-fork-join.c \
+	./es02-rendezvous.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
