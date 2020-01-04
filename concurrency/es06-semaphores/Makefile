@@ -15,5 +15,5 @@ pc-multiple-ss.o: pc-multiple-ss.c
 .PHONY: clean
 
 clean:
-	rm pc-multiple-ss.exe pc-ss.exe
+	rm pc-multiple-ss.exe pc-multiple-ss.o pc-ss.exe
 
