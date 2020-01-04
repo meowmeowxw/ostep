@@ -1,7 +1,7 @@
 CFLAGS=-Wall -Werror -g
 LFLAGS=-lpthread
 
-all: pc-ss.exe pc-multiple-ss.exe
+all: pc-ss.exe pc-multiple-ss.exe philosophers.exe
 
 pc-ss.exe: pc-ss.c
 	gcc ${CFLAGS} -o pc-ss.exe pc-ss.c ${LFLAGS}
@@ -12,8 +12,11 @@ pc-multiple-ss.exe: pc-multiple-ss.o
 pc-multiple-ss.o: pc-multiple-ss.c
 	gcc ${CFLAGS} -D_GNU_SOURCE -c -o pc-multiple-ss.o pc-multiple-ss.c
 
+philosophers.exe: dining-philosophers.c
+	gcc ${CFLAGS} -o philosophers.exe dining-philosophers.c ${LFLAGS}
+
 .PHONY: clean
 
 clean:
-	rm pc-multiple-ss.exe pc-multiple-ss.o pc-ss.exe
+	rm *.exe *.o
 
