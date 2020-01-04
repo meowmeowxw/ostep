@@ -1,0 +1,16 @@
+#define BILLION 1000000000L
+struct timespec start, end;
+if(clock_gettime(CLOCK_REALTIME, &start) == -1)
+{
+	fprintf(stderr, "error in clock_getres\n");
+	exit(1);
+}
+if(clock_gettime(CLOCK_REALTIME, &end) == -1)
+{
+	fprintf(stderr, "error in clock_getres\n");
+	exit(1);
+}
+// convert seconds to nanoseconds and add to nanoseconds
+long int res = (BILLION * (end.tv_sec - start.tv_sec) + \
+			  (end.tv_nsec - start.tv_nsec));
+
