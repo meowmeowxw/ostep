@@ -1,22 +1,24 @@
 CFLAGS=-Wall -Werror -g
 LFLAGS=-lpthread
 
-all: pc-ss.exe pc-multiple-ss.exe philosophers.exe
+SRCS	:= ./pc-ss.c \
+	./pc-multiple-ss.c \
+	./dining-philosophers.c \
+	./es01-fork-join.c
 
-pc-ss.exe: pc-ss.c
-	gcc ${CFLAGS} -o pc-ss.exe pc-ss.c ${LFLAGS}
+OBJS	:= ${SRCS:c=o}
+PROGS	:= ${SRCS:c=exe}
 
-pc-multiple-ss.exe: pc-multiple-ss.o
-	gcc -D_GNU_SOURCE -o pc-multiple-ss.exe pc-multiple-ss.o ${LFLAGS}
+.PHONY: all
 
-pc-multiple-ss.o: pc-multiple-ss.c
-	gcc ${CFLAGS} -D_GNU_SOURCE -c -o pc-multiple-ss.o pc-multiple-ss.c
+all: ${PROGS}
 
-philosophers.exe: dining-philosophers.c
-	gcc ${CFLAGS} -o philosophers.exe dining-philosophers.c ${LFLAGS}
-
-.PHONY: clean
+${PROGS} : %.exe : %.o Makefile
+	gcc $< -o $@ ${LFLAGS}
 
 clean:
-	rm *.exe *.o
+	rm -f ${PROGS} ${OBJS}
+
+%.o: %.c Makefile
+	gcc ${CFLAGS} -D_GNU_SOURCE -c $<
 
