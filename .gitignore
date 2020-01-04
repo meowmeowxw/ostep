@@ -7,4 +7,5 @@
 *.gz
 *.gdb
 .gdb_history
+._*
 
