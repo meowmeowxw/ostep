@@ -7,7 +7,8 @@ SRCS	:= ./pc-ss.c \
 	./es01-fork-join.c \
 	./es02-rendezvous.c \
 	./es03-barrier.c \
-	./es04-reader-writer.c
+	./es04-reader-writer.c \
+	./es05-reader-writer-nostarve.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
