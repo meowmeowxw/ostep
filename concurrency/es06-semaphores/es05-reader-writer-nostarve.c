@@ -25,7 +25,6 @@ void rwlock_init(rwlock_t *rw)
 	rw->readers = 0;
 	sem_init(&rw->mutex, 0, 1);
 	sem_init(&rw->writelock, 0, 1);
-	sem_init(&rw->turnstile, 0, 1);
 }
 
 void rwlock_acquire_readlock(rwlock_t *rw) 
