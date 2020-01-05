@@ -42,13 +42,16 @@ void barrier(barrier_t *b)
 	 * and in clang. Solution use 3 semaphores, however I will do it in the 
 	 * next problem
 	 */
+	/* nvm I think this is a good approach, since I put the critical section
+	 * inside the mutex, but there's no wait there so there will be no deadlock
+	 */
 	sem_wait(&b->mutex);
 	b->num_th--;
-	sem_post(&b->mutex);
 	if(b->num_th == 0)
 	{
 		sem_post(&b->s1);
 	}
+	sem_post(&b->mutex);
 	sem_wait(&b->s1);
 	sem_post(&b->s1);
 }
