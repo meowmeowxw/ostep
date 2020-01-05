@@ -1,8 +1,8 @@
 CFLAGS=-Wall -Werror -g
 LFLAGS=-lpthread
 
-SRCS	:= ./pc-ss.c \
-	./pc-multiple-ss.c \
+SRCS	:= ./producer-consumer.c \
+	./producer-consumer-multiple.c \
 	./dining-philosophers.c \
 	./es01-fork-join.c \
 	./es02-rendezvous.c \
