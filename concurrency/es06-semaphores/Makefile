@@ -5,7 +5,8 @@ SRCS	:= ./pc-ss.c \
 	./pc-multiple-ss.c \
 	./dining-philosophers.c \
 	./es01-fork-join.c \
-	./es02-rendezvous.c
+	./es02-rendezvous.c \
+	./es03-barrier.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
