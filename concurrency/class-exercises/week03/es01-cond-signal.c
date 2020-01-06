@@ -12,12 +12,14 @@ pthread_mutex_t  sync_lock;
 pthread_cond_t   sync_cond; 
 int  sync_count = 0; 
 
-void SyncPoint(void) 
+void barrier(void) 
 { 
 	int index;
+	pthread_t  th; 
 	/* blocca l'accesso al counter */ 
 	Pthread_mutex_lock(&sync_lock); 
-
+	th = pthread_self(); 
+	printf ("I am %lu\n", th); 
 	index = sync_count;
 	/* incrementa il counter di quelli arrivati*/ 
 	sync_count++; 
@@ -39,6 +41,7 @@ void SyncPoint(void)
 		Pthread_cond_wait(&sync_cond, &sync_lock);
 	}
 	sync_count++;
+	printf("I am %lu and I'm leaving \n", th); 
 	pthread_cond_broadcast(&sync_cond);
 	/* sblocca il mutex */ 
 	Pthread_mutex_unlock (&sync_lock); 
@@ -46,11 +49,7 @@ void SyncPoint(void)
 
 void *Thread (void *arg) 
 { 
-	pthread_t  th; 
-	th = pthread_self(); 
-	printf ("I am %lu\n", th); 
-	SyncPoint(); 
-	printf("I am %lu and I'm leaving \n", th); 
+	barrier(); 
 	return NULL;
 } 
 
