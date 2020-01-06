@@ -2,6 +2,7 @@ CFLAGS=-Wall -Werror -g -D_THREAD_SAFE -D_REENTRANT -D_POSIX_C_SOURCE=200112L -I
 LFLAGS=-lpthread
 
 SRCS	:= ./es01-cond-signal.c \
+	./es01-semaphore.c \
 	./es02-sync-circular-three-th.c \
 	./es03-baker.c
 
