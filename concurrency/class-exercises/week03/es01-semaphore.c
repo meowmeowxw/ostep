@@ -13,8 +13,13 @@ int sync_count = 0;
 sem_t s[SYNC_MAX];
 sem_t mutex;
 
-void barrier(int id) 
+void barrier() 
 { 
+	int id;
+	sem_wait(&mutex);
+	id = sync_count;
+	sync_count++;
+	sem_post(&mutex);
 	if(id < SYNC_MAX - 1)
 	{
 		sem_wait(&s[id]);
@@ -29,10 +34,10 @@ void barrier(int id)
 
 void *Thread (void *arg) 
 { 
-	int id = *(int *)arg;
-	printf ("I am %d\n", id); 
-	barrier(id);
-	printf("I am %d and I'm leaving\n", id); 
+	//int id = *(int *)arg;
+	printf ("I am %lu\n", pthread_self()); 
+	barrier();
+	printf("I am %lu and I'm leaving\n", pthread_self()); 
 	return NULL;
 } 
 
@@ -45,7 +50,7 @@ int main ()
 	{
 		sem_init(&s[i], 0, 0);
 	}
-	sem_init(&mutex, 0, 0);
+	sem_init(&mutex, 0, 1);
 	for(i = 0; i < SYNC_MAX; i++) 
 	{
 		x[i] = i;
