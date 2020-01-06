@@ -48,9 +48,9 @@ void *Thread (void *arg)
 { 
 	pthread_t  th; 
 	th = pthread_self(); 
-	printf ("%lu\n", th); 
+	printf ("I am %lu\n", th); 
 	SyncPoint(); 
-	printf("Sono %lu e sono uscito \n", th); 
+	printf("I am %lu and I'm leaving \n", th); 
 	return NULL;
 } 
 
