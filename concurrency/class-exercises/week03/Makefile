@@ -2,7 +2,7 @@ CFLAGS=-Wall -Werror -g -D_THREAD_SAFE -D_REENTRANT -D_POSIX_C_SOURCE=200112L -I
 LFLAGS=-lpthread
 
 SRCS	:= ./es01-cond-signal.c \
-			./es03-barrier.c
+	./es02-sync-circular-three-th.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
