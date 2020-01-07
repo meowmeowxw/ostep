@@ -37,6 +37,7 @@ void *customer_do(void *arg)
 	fflush(stdout);
 	sem_wait(&s[myticket]);
 	shelf(myticket);
+	sem_post(&s[myticket + 1]);
 	sem_post(&s[myticket + 2]);
 	return NULL;
 }
