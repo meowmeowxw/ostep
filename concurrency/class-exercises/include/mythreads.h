@@ -60,6 +60,19 @@ void Pthread_cond_broadcast(pthread_cond_t *cond) {
 	int rc = pthread_cond_broadcast(cond);
 	assert(rc == 0);
 }
+
+void Pthread_mutex_destroy(pthread_mutex_t *mutex)
+{
+       int rc = pthread_mutex_destroy(mutex);
+	   assert(rc == 0);
+}
+
+void Pthread_cond_destroy(pthread_cond_t *cond)
+{
+	int rc = pthread_cond_destroy(cond);
+	assert (rc == 0);
+}
+
 #endif // __MYTHREADS_h__
 
 #ifndef __MALLOC__
