@@ -5,6 +5,7 @@ LFLAGS=-lpthread
 SRCS	:= ./es01-cond-signal.c \
 	./es01-semaphore.c \
 	./es02-sync-circular-three-th.c \
+	./es02-sync-circular-three-cv.c \
 	./es03-baker.c
 
 OBJS	:= ${SRCS:c=o}
