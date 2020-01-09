@@ -6,7 +6,7 @@
 #include <mythreads.h>
 
 #define N 10
-#define NUM_CUSTOMERS 2
+#define NUM_CUSTOMERS 1
 
 int full_desk = N;
 pthread_mutex_t lock;
@@ -25,7 +25,9 @@ void *pizza_man(void *arg)
 		printf("pizza man has prepared a new pizza\ttotal: %d\n",full_desk);
 		Pthread_mutex_unlock(&lock);
 		sleep(1);
+		Pthread_mutex_lock(&lock);
 		Pthread_cond_broadcast(&full);
+		Pthread_mutex_unlock(&lock);
 	}
 }
 
@@ -41,8 +43,8 @@ void *customer(void *arg)
 		}
 		full_desk--;
 		printf("customer: %d is taking pizza\n", id);
-		Pthread_mutex_unlock(&lock);
 		Pthread_cond_signal(&empty);
+		Pthread_mutex_unlock(&lock);
 		sleep(2);
 	}
 }
