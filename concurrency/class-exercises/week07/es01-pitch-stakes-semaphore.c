@@ -29,8 +29,7 @@ void *take_stake(void *arg)
 		hammer[1] = 0;
 		sem_post(&mutex_1);
 
-		puts("hammer 0 ready");
-		puts("hammer 1 ready\n");
+		puts("\nhammer 0/1 ready\n");
 
 		sem_post(&full_0);
 		sem_post(&full_1);
@@ -49,7 +48,6 @@ void *hammer_do_0(void *arg)
 {
 	while(1)
 	{
-		
 		sem_wait(&full_0);
 		sem_wait(&mutex_0);
 		puts("hammer 0 start");
