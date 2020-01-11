@@ -27,6 +27,11 @@ void print_stat_info(struct stat *info)
 
 int main(int argc, char **argv)
 {
+	if(argc == 1)
+	{
+		fprintf(stderr, "usage: ./es01-stat.exe <file>\n");
+		exit(1);
+	}
 	int rc;
 	int i;
 	struct stat info;
