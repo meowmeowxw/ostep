@@ -81,18 +81,12 @@ int main(int argc, char **argv)
 	if(!extended && argc > 1)
 		path = argv[1];
 
-	printf("[*] %s\n", path);
-
 	if((dir = opendir(path)) == NULL)
-	{
-		puts("porcodio");
 		print_error();
-	}
 	
 	if(stat(path, &info) == -1)
-	{
 		print_error();
-	}
+
 	if(S_ISDIR(info.st_mode))
 	{
 		while((d = readdir(dir)) != NULL)
