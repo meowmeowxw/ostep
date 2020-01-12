@@ -6,54 +6,118 @@
 #include <dirent.h>
 #include <errno.h>
 #include <pwd.h>
+#include <getopt.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
 #define MAX_ARGS 3
+#define MAX_LENGTH_NAME_FILE 1024
+
 int extended = 0;
+
+void print_error()
+{
+	fprintf(stderr, "%s\n", strerror(errno));
+	exit(1);
+}
+
+void print_file(struct stat *info)
+{
+	struct passwd *p;
+	p = getpwuid(info->st_uid);
+	switch(info->st_mode & S_IFMT)
+	{
+		case S_IFBLK:  printf("b"); break;
+        case S_IFCHR:  printf("c"); break;
+        case S_IFDIR:  printf("d"); break;
+        case S_IFIFO:  printf("f"); break;
+        case S_IFLNK:  printf("l"); break;
+        case S_IFREG:  printf("-"); break;
+        case S_IFSOCK: printf("s"); break;
+        default:       printf("?"); break;
+	}
+    printf((info->st_mode & S_IRUSR) ? "r" : "-");
+    printf((info->st_mode & S_IWUSR) ? "w" : "-");
+    printf((info->st_mode & S_IXUSR) ? "x" : "-");
+    printf((info->st_mode & S_IRGRP) ? "r" : "-");
+    printf((info->st_mode & S_IWGRP) ? "w" : "-");
+    printf((info->st_mode & S_IXGRP) ? "x" : "-");
+    printf((info->st_mode & S_IROTH) ? "r" : "-");
+    printf((info->st_mode & S_IWOTH) ? "w" : "-");
+    printf((info->st_mode & S_IXOTH) ? "x" : "-");
+	printf("\t%s\t%lu\t", p->pw_name, info->st_size);
+	return;
+}
+
 int main(int argc, char **argv)
 {
 	struct dirent *d;
-	struct passwd *p;
+	struct stat info;
 	DIR *dir;
 	char *path = ".";
-	char *file;
-	char option[3] = "-l\00";
-	struct stat info;
-	if(argc >= 2)
+	char file_path[MAX_LENGTH_NAME_FILE];
+	int option_index;
+	int extended = 0;
+	opterr = 0;
+
+	while((option_index = getopt(argc, argv, "l:")) != -1)
 	{
-		if(strncmp(argv[1], option, strlen(option)) == 0)
+		switch(option_index)
 		{
-			extended = 1;
-			if(argc == 3)
-			{
-				path = argv[2];
-			}
-		} else
-		{
-			path = argv[1];
+			case 'l':
+				path = optarg;
+				extended = 1;
+				break;
+			case '?':
+				if(optopt == 'l')
+					extended = 1;
+				break;
+			default:
+				break;
 		}
+		
 	}
-	puts(path);
-	dir = opendir(path);
-	if(dir == NULL)
+	if(!extended && argc > 1)
+		path = argv[1];
+
+	printf("[*] %s\n", path);
+
+	if((dir = opendir(path)) == NULL)
 	{
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(1);
+		puts("porcodio");
+		print_error();
 	}
-	while((d = readdir(dir)) != NULL)
+	
+	if(stat(path, &info) == -1)
+	{
+		print_error();
+	}
+	if(S_ISDIR(info.st_mode))
+	{
+		while((d = readdir(dir)) != NULL)
+		{
+			if(extended)
+			{
+				strncpy(file_path, path, strlen(path));
+				strcat(file_path, "/");
+				strncat(file_path, d->d_name, strlen(d->d_name));
+				if(stat(file_path, &info) == -1)
+				{
+					print_error();
+				}
+				print_file(&info);
+				memset(file_path, 0, MAX_LENGTH_NAME_FILE);
+			}
+			printf("%s\n", d->d_name);
+		}
+		closedir(dir);
+	} else
 	{
 		if(extended)
-		{
-			file = d->d_name;
-			if(stat(file, &info) == -1)
-			{
-				continue;
-			}
-			p = getpwuid(info.st_uid);
-			printf("%s\t%lu\t", p->pw_name, info.st_size);
-		}
-		printf("%s\n", d->d_name);
+			print_file(&info);
+		printf("%s\n", path);
 	}
-	closedir(dir);
 	return 0;
 }
+

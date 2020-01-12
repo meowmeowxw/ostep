@@ -1,6 +1,7 @@
-CFLAGS=-Wall -Werror -g
+CFLAGS=-g
 
-SRCS	:= ./es01-stat.c
+SRCS	:= ./es01-stat.c \
+	./es02-ls.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
