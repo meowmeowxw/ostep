@@ -29,23 +29,23 @@ void print_file(struct stat *info)
 	switch(info->st_mode & S_IFMT)
 	{
 		case S_IFBLK:  printf("b"); break;
-        case S_IFCHR:  printf("c"); break;
-        case S_IFDIR:  printf("d"); break;
-        case S_IFIFO:  printf("f"); break;
-        case S_IFLNK:  printf("l"); break;
-        case S_IFREG:  printf("-"); break;
-        case S_IFSOCK: printf("s"); break;
-        default:       printf("?"); break;
+		case S_IFCHR:  printf("c"); break;
+		case S_IFDIR:  printf("d"); break;
+		case S_IFIFO:  printf("f"); break;
+		case S_IFLNK:  printf("l"); break;
+		case S_IFREG:  printf("-"); break;
+		case S_IFSOCK: printf("s"); break;
+		default:       printf("?"); break;
 	}
-    printf((info->st_mode & S_IRUSR) ? "r" : "-");
-    printf((info->st_mode & S_IWUSR) ? "w" : "-");
-    printf((info->st_mode & S_IXUSR) ? "x" : "-");
-    printf((info->st_mode & S_IRGRP) ? "r" : "-");
-    printf((info->st_mode & S_IWGRP) ? "w" : "-");
-    printf((info->st_mode & S_IXGRP) ? "x" : "-");
-    printf((info->st_mode & S_IROTH) ? "r" : "-");
-    printf((info->st_mode & S_IWOTH) ? "w" : "-");
-    printf((info->st_mode & S_IXOTH) ? "x" : "-");
+	printf((info->st_mode & S_IRUSR) ? "r" : "-");
+	printf((info->st_mode & S_IWUSR) ? "w" : "-");
+	printf((info->st_mode & S_IXUSR) ? "x" : "-");
+	printf((info->st_mode & S_IRGRP) ? "r" : "-");
+	printf((info->st_mode & S_IWGRP) ? "w" : "-");
+	printf((info->st_mode & S_IXGRP) ? "x" : "-");
+	printf((info->st_mode & S_IROTH) ? "r" : "-");
+	printf((info->st_mode & S_IWOTH) ? "w" : "-");
+	printf((info->st_mode & S_IXOTH) ? "x" : "-");
 	printf("\t%s\t%lu\t", p->pw_name, info->st_size);
 	return;
 }
