@@ -7,11 +7,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "error.h"
-// stat
-// lseek
-// open
-// read
-// close
 
 int main(int argc, char **argv)
 {
@@ -69,18 +64,19 @@ int main(int argc, char **argv)
 			nlines--;
 		}
 		if(lseek(fd, -2, SEEK_CUR) == -1)
-		{
 			break;
-		}
 	}
+
 	if((buf = malloc(total_size)) == NULL)
 	{
 		fprintf(stderr, "error malloc\n");
 		exit(1);
 	}
+
 	lseek(fd, -(total_size), SEEK_END);
 	if(read(fd, buf, total_size) == -1)
 		print_error();
+
 	printf("%s\n", buf);
 	return 0;
 }
