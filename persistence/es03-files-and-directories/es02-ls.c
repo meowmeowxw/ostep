@@ -10,17 +10,12 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "error.h"
 
 #define MAX_ARGS 3
 #define MAX_LENGTH_NAME_FILE 1024
 
 int extended = 0;
-
-void print_error()
-{
-	fprintf(stderr, "%s\n", strerror(errno));
-	exit(1);
-}
 
 void print_file(struct stat *info)
 {
@@ -58,7 +53,6 @@ int main(int argc, char **argv)
 	char *path = ".";
 	char file_path[MAX_LENGTH_NAME_FILE];
 	int option_index;
-	int extended = 0;
 	opterr = 0;
 
 	while((option_index = getopt(argc, argv, "l:")) != -1)
