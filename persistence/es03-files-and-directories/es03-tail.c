@@ -18,12 +18,11 @@ int main(int argc, char **argv)
 	struct stat info;
 	char *path;
 	char *buf;
-	char *final;
 	char chr[0];
 	int option_index;
 	int fd;
 	long int nlines = 0;
-	long unsigned int total_size = 1;
+	long unsigned int total_size = 0;
 	long unsigned int i = 0;
 	int length_line = 0;
 	opterr = 0;
@@ -47,7 +46,6 @@ int main(int argc, char **argv)
 		}
 	}
 	path = argv[optind];
-	printf("nlines: %lu\n", nlines);
 
 	if(stat(path, &info) == -1)
 		print_error();
@@ -67,24 +65,21 @@ int main(int argc, char **argv)
 		total_size++;
 		if(chr[0] == '\n')
 		{
-			if(lseek(fd, -(length_line + 1), SEEK_CUR) == -1)
-			{
-				fprintf(stderr, "porcodioseek\n");
-			}
 			length_line = 0;
 			nlines--;
-		} else
+		}
+		if(lseek(fd, -2, SEEK_CUR) == -1)
 		{
-			if(lseek(fd, -2, SEEK_CUR) == -1)
-			{
-				break;
-			}
+			break;
 		}
 	}
-	printf("total_size: %lu\n", total_size);
-	buf = malloc(total_size + 1);
-	lseek(fd, -(total_size + 1), SEEK_END);
-	if(read(fd, buf, (total_size + 1)) == -1)
+	if((buf = malloc(total_size)) == NULL)
+	{
+		fprintf(stderr, "error malloc\n");
+		exit(1);
+	}
+	lseek(fd, -(total_size), SEEK_END);
+	if(read(fd, buf, total_size) == -1)
 		print_error();
 	printf("%s\n", buf);
 	return 0;
