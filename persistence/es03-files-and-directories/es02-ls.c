@@ -4,7 +4,6 @@
 #include <string.h>
 #include <time.h>
 #include <dirent.h>
-#include <errno.h>
 #include <pwd.h>
 #include <getopt.h>
 #include <stdbool.h>

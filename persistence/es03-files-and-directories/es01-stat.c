@@ -5,7 +5,6 @@
 #include <time.h>
 #include <assert.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include "error.h"
 
 void print_stat_info(struct stat *info)
