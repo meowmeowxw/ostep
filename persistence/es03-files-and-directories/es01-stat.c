@@ -5,6 +5,8 @@
 #include <time.h>
 #include <assert.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include "error.h"
 
 void print_stat_info(struct stat *info)
 {
@@ -32,13 +34,12 @@ int main(int argc, char **argv)
 		fprintf(stderr, "usage: ./es01-stat.exe <file>\n");
 		exit(1);
 	}
-	int rc;
 	int i;
 	struct stat info;
 	for(i = 1; i < argc; i++)
 	{
-		rc = stat(argv[1], &info);
-		assert(rc == 0);
+		if(stat(argv[1], &info) != 0)
+			print_error();
 		printf("File: %s\n", argv[1]);
 		print_stat_info(&info);
 	}
