@@ -73,6 +73,26 @@ int is_built_in(char *cmd)
 	return 0;
 }
 
+void execute_cmd(char **arg)
+{
+	pid_t pid;
+	int status;
+
+	if((pid = fork()) == -1)
+		print_error("fork");
+	if(pid == 0)
+	{
+		if(execvp(arg[0], arg) == -1)
+			print_error("execvp");
+		exit(0);
+	} else
+	{
+		waitpid(pid, &status, 0);
+		int exit_status = WEXITSTATUS(status);
+		printf("%u  \n", exit_status);
+	}
+}
+
 int main(int argc, char **argv)
 {
 	char prompt[] = "prompt> ";
@@ -94,23 +114,16 @@ int main(int argc, char **argv)
 	}
 	while(1)
 	{
+		printf("%s", prompt);
 		if((nread = getline(&line, &len, stream)) != -1)
 		{
 			char *arg[MAX_ARGS] = {'\0'};
 			parse_line(line, arg);
 			if(!is_built_in(arg[0]))
 			{
-				if((pid = fork()) == -1)
-					print_error("fork");
-				if(pid == 0)
-				{
-					execvp(arg[0], arg);
-					exit(0);
-				} else
-				{
-					wait(NULL);
-				}
-			} else
+				execute_cmd(arg);
+			}
+			else
 			{
 				if(strcmp(arg[0], "cd") == 0)
 					execute_cd(arg);
