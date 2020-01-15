@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char **argv)
-{
-	int *x;
-	x = NULL;
-	// segfault
-	// gdb: Program received signal SIGSEGV (fault address 0x0)
-	printf("x is: %d\n", *x);
-	return 0;
+int main(int argc, char **argv) {
+    int *x;
+    x = NULL;
+    // segfault
+    // gdb: Program received signal SIGSEGV (fault address 0x0)
+    printf("x is: %d\n", *x);
+    return 0;
 }
 
 /*
@@ -23,7 +22,7 @@ int main(int argc, char **argv)
  *==11738==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
  *==11738==
  *==11738==
- *==11738== Process terminating with default action of signal 11 (SIGSEGV): 
+ *==11738== Process terminating with default action of signal 11 (SIGSEGV):
  *dumping
  *core
  *==11738==  Access not within mapped region at address 0x0
@@ -42,7 +41,6 @@ int main(int argc, char **argv)
  *==11738==
  *==11738== For lists of detected and suppressed errors, rerun with: -s
  *==11738== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
- *[1] 11738 segmentation fault (core dumped)  valgrind --leak-check=yes 
+ *[1] 11738 segmentation fault (core dumped)  valgrind --leak-check=yes
  ./es01-null
-*/ 
-
+*/

@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char **argv)
-{
-	int *x;
-	x = malloc(sizeof(int));
-	*x = 10;
-	printf("*x: %d\n", *x);
-	return 0;
+int main(int argc, char **argv) {
+    int *x;
+    x = malloc(sizeof(int));
+    *x = 10;
+    printf("*x: %d\n", *x);
+    return 0;
 }
 
 /*
@@ -36,4 +35,3 @@ int main(int argc, char **argv)
  *==14391==
  *==14391== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
  */
-
