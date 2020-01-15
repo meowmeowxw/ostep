@@ -4,6 +4,9 @@ CFLAGS=-g
 
 all: wish.exe
 
-wish.exe: main.o
-	gcc ${CFLAGS} -o wish.exe main.o
+wish.exe: wish.o
+	gcc ${CFLAGS} -o wish.exe wish.o
+
+wish.o: wish.c
+	gcc ${CFLAGS} -o wish.o -c wish.c
 
