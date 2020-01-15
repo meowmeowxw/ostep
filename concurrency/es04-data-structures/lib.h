@@ -1,4 +1,3 @@
 #define NUMCPU 8
 #define MAX 100000000
 #define BILLION 1000000000L
-

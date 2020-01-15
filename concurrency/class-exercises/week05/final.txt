@@ -1,0 +1,46 @@
+/bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var es01-flinstones.c es03-sum-h-ifdef.sh final.txt lab.pdf Makefile selected.txt - put gamma, cms-related declarations inside #ifdef es01-flinstones.c es03-sum-h-ifdef.sh final.txt lab.pdf Makefile selected.txt */ #ifdef MNG_SUPPORT_READ /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var dependencies based on user-configuration */ #ifdef MNG_SUPPORT_WRITE #ifdef MNG_USE_ZLIB_CRC #ifdef MNG_SUPPORT_DISPLAY
+/bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var #ifdef __DATE__ */ # ifdef __unix__ #ifdef __GO32__ #ifdef __BORLANDC__ #ifdef __MSDOS__
+es01-flinstones.c es03-sum-h-ifdef.sh final.txt lab.pdf Makefile selected.txt file that contains #ifdefs to handle different flavors of UNIX. This es01-flinstones.c es03-sum-h-ifdef.sh final.txt lab.pdf Makefile selected.txt The following sets of #includes and #ifdefs are required to get Tcl to #ifdef HAVE_NET_ERRNO_H #ifdef HAVE_SYS_PARAM_H #ifdef USE_DIRENT2_H
+#ifdef addch #ifdef addchstr #ifdef addnstr #ifdef addstr #ifdef attroff
+#ifdef __BORLANDC__ #ifdef HIDDEN_FOR_NOW #ifdef WIN32 /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var only include needed stuff */ #ifdef MNG_USE_DLL #ifdef MNG_SKIP_ZLIB
+#ifdef BUILD_tcl # ifdef USE_TCL_STUBS #ifdef __cplusplus #ifdef MAC_OSX_TCL /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var MACOSX */ #ifdef MAC_OSX_TCL /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var MACOSX */
+#ifdef BUILD_tk #ifdef __cplusplus #ifdef MAC_OSX_TK /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var AQUA */ #ifdef MAC_OSX_TK /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var AQUA */ #ifdef MAC_OSX_TK /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var AQUA */
+#ifdef CL_VERSION_1_0 #ifdef CL_VERSION_1_0 #ifdef CL_VERSION_1_0 #ifdef CL_VERSION_1_0 #ifdef CL_VERSION_1_0
+#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO # ifdef __OPTIMIZE__ #ifdef __USE_GNU # ifdef __CORRECT_ISO_CPP_STRING_H_PROTO # ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
+# ifdef __cplusplus #ifdef CMS_DONT_USE_INT64 #ifdef _MSC_VER #ifdef __BORLANDC__ #ifdef CMS_USE_BIG_ENDIAN // set at compiler command line takes overall precedence
+#ifdef __cplusplus #ifdef __cplusplus #ifdef __cplusplus #ifdef __cplusplus #ifdef __cplusplus
+#ifdef __cplusplus #ifdef _GNU_SOURCE #ifdef _REGEX_LARGE_OFFSETS #ifdef __USE_GNU #ifdef __USE_GNU
+#ifdef __cplusplus #ifdef HAVE___ATTRIBUTE__ #ifdef DOXYGEN #ifdef DOXYGEN #ifdef DOXYGEN
+# ifdef __cplusplus # ifdef __INTEL_COMPILER_BUILD_DATE # ifdef __cplusplus # ifdef __cplusplus # ifdef PLATFORM_PGI_IS_ANCIENT
+#ifdef __cplusplus # ifdef MAC_OSX_TK #ifdef BUILD_tk #ifdef XNQueryInputStyle #ifdef TCL_MEM_DEBUG
+#ifdef __cplusplus #ifdef MP_DIGIT_BIT #ifdef MP_8BIT # ifdef MP_DIGIT_BIT # ifdef MP_DIGIT_BIT
+#ifdef __cplusplus #ifdef SQLITE_VERSION #ifdef SQLITE_VERSION_NUMBER #ifdef SQLITE_INT64_TYPE # ifdef SQLITE_UINT64_TYPE
+#ifdef __cplusplus #ifdef _WIN32 # ifdef LIBSSH2_WIN32 # ifdef _WINDLL # ifdef LIBSSH2_LIBRARY
+#ifdef __cplusplus #ifdef _WIN32 #ifdef TCL_THREADS # ifdef STATIC_BUILD # ifdef _DLL
+#ifdef DEBUG #ifdef DEBUG #ifdef USE_CLN #ifdef BAND_PRESENTATION_SORT_BY_COMPARISON #ifdef BAND_PRESENTATION_SORT_BY_COMPARISON
+#ifdef DOXYGEN #ifdef DOXYGEN #ifdef DOXYGEN #ifdef DOXYGEN #ifdef DOXYGEN
+#ifdef ENABLE_CRYPTO #ifdef ENABLE_CRYPTO_MBEDTLS #else /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var ifdef ENABLE_CRYPTO_MBEDTLS */ #ifdef __cplusplus #ifdef OPENVPN_PLUGIN_H
+#ifdef __GNUC__ #ifdef __cplusplus #ifdef __GNUC__ # ifdef __SANITIZE_ADDRESS__ #ifdef GPGRT_HAVE_LEAK_SANITIZER
+#ifdef __GNUC__ #ifdef __cplusplus #ifdef __GNUC__ # ifdef __SANITIZE_ADDRESS__ #ifdef GPGRT_HAVE_LEAK_SANITIZER
+#ifdef HAVE_SYS_TYPES_H #ifdef HAVE_SYS_PARAM_H #ifdef BYTE_ORDER # ifdef BIG_ENDIAN # ifdef LITTLE_ENDIAN
+#ifdef __hpux #ifdef __KEY_MAX #ifdef __KEY_MIN #ifdef color_names #ifdef buttons
+#ifdef LTM_NO_FILE #ifdef MP_8BIT # ifdef _MSC_VER #ifdef __cplusplus #ifdef MP_DIGIT_BIT
+#ifdef NO_STDLIB_H #ifdef NO_STRING_H #ifdef HAVE_SYS_TYPES_H #ifdef HAVE_SYS_PARAM_H #ifdef BYTE_ORDER
+#ifdef __O_TMPFILE #ifdef __USE_XOPEN2K8 # ifdef __S_IFIFO # ifdef __S_IFLNK #ifdef __USE_MISC
+#ifdef PNG_STDIO_SUPPORTED #ifdef PNG_SETJMP_SUPPORTED #ifdef PNG_CONVERT_tIME_SUPPORTED #ifdef PNG_PEDANTIC_WARNINGS_SUPPORTED # ifdef __has_extension
+#ifdef PNG_USER_PRIVATEBUILD /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var From pnglibconf.h */ # ifdef PNG_LIBPNG_SPECIALBUILD #ifdef __cplusplus #ifdef PNG_APNG_SUPPORTED #ifdef PNG_TEXT_SUPPORTED
+#ifdef __USE_GNU # ifdef __GNUC__ #ifdef __USE_XOPEN2K8 #ifdef __USE_LARGEFILE64 #ifdef __USE_GNU
+#ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_GNU
+#ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_LARGEFILE64
+#ifdef __USE_GNU #ifdef __USE_XOPEN2K # ifdef __USE_GNU # ifdef __USE_GNU # ifdef __USE_GNU
+#ifdef __USE_ISOC99 #ifdef __USE_ISOC99 #ifdef __USE_ISOC99 #ifdef __USE_ISOC99 #ifdef __USE_ISOC99
+#ifdef __USE_MISC #ifdef __USE_GNU #ifdef __USE_MISC #ifdef __USE_GNU #ifdef __USE_MISC
+#ifdef __USE_POSIX199309 #ifdef __USE_XOPEN2K #ifdef __USE_XOPEN2K8 #ifdef __USE_ISOC11 #ifdef __USE_XOPEN
+#ifdef __USE_XOPEN2K8 /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var These are not #ifdef __USE_POSIX2 because they are #ifdef __USE_XOPEN2K8 #ifdef __USE_XOPEN2K8 #ifdef __USE_GNU
+#ifdef __USE_XOPEN2K8 #ifdef __USE_XOPEN2K8 #ifdef __USE_XOPEN2K8 #ifdef __CORRECT_ISO_CPP_WCHAR_H_PROTO #ifdef __CORRECT_ISO_CPP_WCHAR_H_PROTO
+#ifdef __USE_XOPEN_EXTENDED #ifdef __USE_XOPEN_EXTENDED # ifdef __USE_GNU #ifdef __USE_GNU #ifdef __USE_LARGEFILE64
+#ifdef __USE_XOPEN #ifdef _DIRENT_HAVE_D_NAMLEN # ifdef _DIRENT_HAVE_D_RECLEN #ifdef __USE_MISC #ifdef __USE_XOPEN2K8
+#ifdef __USE_XOPEN #ifdef __USE_POSIX199309 #ifdef __USE_MISC #ifdef __USE_POSIX199309 #ifdef __USE_GNU
+#ifdef __WATCOMC__ #ifdef __IBMC__ #ifdef __GMP_WITHIN_GMP #ifdef __GMP_SHORT_LIMB #ifdef _LONG_LONG_LIMB
+# ifdef __WIFCONTINUED #ifdef __USE_ISOC99 #ifdef __USE_ISOC99 #ifdef __USE_MISC #ifdef __USE_ISOC99
+#ifdef Z_PREFIX /bin /boot /dev /efi /etc /home /lib /lib64 /lost+found /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var may be set to #if 1 by ./configure */ # ifdef _WIN32 #ifdef SYS16BIT #ifdef MSDOS #ifdef __STDC_VERSION__

@@ -6,7 +6,6 @@
 #include <inttypes.h>
 #include <limits.h> /* for OPEN_MAX */
 #include <pthread.h>
-#include <pthread.h>
 #include <semaphore.h>
 #include <signal.h>
 #include <stdint.h>

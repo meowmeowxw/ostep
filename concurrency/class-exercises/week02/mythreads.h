@@ -1,15 +1,16 @@
 #ifndef __MYTHREADS_h__
 #define __MYTHREADS_h__
 
-#include <pthread.h>
 #include <assert.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <sys/time.h>
 
 double Time_GetSeconds() {
     struct timeval t;
-    int rc = gettimeofday(&t, NULL); assert(rc == 0);
-    return (double) ((double)t.tv_sec + (double)t.tv_usec / 1e6);
+    int rc = gettimeofday(&t, NULL);
+    assert(rc == 0);
+    return (double)((double)t.tv_sec + (double)t.tv_usec / 1e6);
 }
 
 void Pthread_mutex_init(pthread_mutex_t *mutex,
@@ -28,14 +29,12 @@ void Pthread_mutex_unlock(pthread_mutex_t *m) {
     assert(rc == 0);
 }
 
-void Pthread_cond_init(pthread_cond_t *cond,
-		       const pthread_condattr_t *attr) {
+void Pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
     int rc = pthread_cond_init(cond, attr);
     assert(rc == 0);
 }
 
-void Pthread_cond_wait(pthread_cond_t *cond,
-		       pthread_mutex_t *mutex) {
+void Pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
     int rc = pthread_cond_wait(cond, mutex);
     assert(rc == 0);
 }
@@ -46,7 +45,7 @@ void Pthread_cond_signal(pthread_cond_t *cond) {
 }
 
 void Pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                    void *(*start_routine)(void*), void *arg) {
+                    void *(*start_routine)(void *), void *arg) {
     int rc = pthread_create(thread, attr, start_routine, arg);
     assert(rc == 0);
 }
@@ -60,15 +59,13 @@ void Pthread_join(pthread_t thread, void **value_ptr) {
 
 #ifndef __MALLOC__
 #define __MALLOC
-void *Malloc(size_t size)
-{
-	void *ptr;
-	ptr = malloc(size);
-	if(ptr == NULL)
-	{
-		fprintf(stderr, "malloc failed\n");
-		exit(1);
-	}
-	return ptr;
+void *Malloc(size_t size) {
+    void *ptr;
+    ptr = malloc(size);
+    if (ptr == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        exit(1);
+    }
+    return ptr;
 }
 #endif // __MALLOC__
