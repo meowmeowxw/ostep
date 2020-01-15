@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 		printf("child x changed : %d\n", x);
 	} else
 	{
-		int rc_wait = wait(NULL);
+		wait(NULL);
 		printf("parent time : pid %d\n", (int)getpid());
 		printf("parent x : %d\n", x);
 		x += 10;
