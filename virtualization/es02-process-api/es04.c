@@ -6,15 +6,15 @@
 
 char LS_PATH[] = "/bin/ls";
 
-int call_execl()
+void call_execl()
 {
-	return execl(LS_PATH, "ls");
+	execl(LS_PATH, "ls");
 }
 
-int call_execvp()
+void call_execvp()
 {
 	char *arguments[] = {LS_PATH, "-l"};
-	return execvp(LS_PATH, arguments);
+	execvp(LS_PATH, arguments);
 }
 
 int main(int argc, char **argv)
