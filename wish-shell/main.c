@@ -165,6 +165,15 @@ int check_redirection(char **arg)
 	return -1;
 }
 
+void del(char **arg) {
+	int i;
+	for(i = 0; i < arg_count; i++) {
+		free(arg[i]);
+		arg[i] = NULL;
+	}
+	free(arg);
+}
+
 int main(int argc, char **argv) {
     char **arg;
     FILE *stream = stdin;
@@ -183,9 +192,11 @@ int main(int argc, char **argv) {
         }
     }
     while (1) {
+		path_output = NULL;
+		path_error = NULL;
 		print_prompt();
         if ((nread = getline(&line, &len, stream)) != -1) {
-            arg = calloc(MAX_ARGS, 8);
+            arg = calloc(MAX_ARGS, sizeof(intptr_t));
             parse_line(line, arg);
             if (!is_built_in(arg[0])) {
                 execute_cmd(arg);
