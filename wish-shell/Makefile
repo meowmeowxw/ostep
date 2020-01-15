@@ -10,3 +10,6 @@ wish.exe: wish.o
 wish.o: wish.c
 	gcc ${CFLAGS} -o wish.o -c wish.c
 
+clean:
+	rm *.o *.exe
+
