@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char **argv)
-{
-	int *data;
-	data = malloc(sizeof(int) * 100);
-	return 0;
+int main(int argc, char **argv) {
+    int *data;
+    data = malloc(sizeof(int) * 100);
+    return 0;
 }
 
 /*
@@ -33,4 +32,3 @@ int main(int argc, char **argv)
  *==18907==
  *==18907== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
  */
-

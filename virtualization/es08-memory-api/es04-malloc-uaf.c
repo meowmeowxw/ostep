@@ -1,23 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char **argv)
-{
-	int *data, i;
-	data = malloc(sizeof(int) * 100);
-	free(data);
-	for(i = 0; i < 100; ++i)
-	{
-		data[i] = i;
-	}
-	return 0;
+int main(int argc, char **argv) {
+    int *data, i;
+    data = malloc(sizeof(int) * 100);
+    free(data);
+    for (i = 0; i < 100; ++i) {
+        data[i] = i;
+    }
+    return 0;
 }
 
-/* 
+/*
  * > valgrind --leak-check=yes -s ./es04-malloc-uaf
  *==19547== Memcheck, a memory error detector
  *==19547== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
- *==19547== Using Valgrind-3.15.0 and LibVEX; 
+ *==19547== Using Valgrind-3.15.0 and LibVEX;
  *rerun with -h for copyright info
  *==19547== Command: ./es04-malloc-uaf
  *==19547==
@@ -51,4 +49,3 @@ int main(int argc, char **argv)
  *==19547==
  *==19547== ERROR SUMMARY: 100 errors from 1 contexts (suppressed: 0 from 0)
  */
-
