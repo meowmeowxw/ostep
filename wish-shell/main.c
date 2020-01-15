@@ -18,9 +18,7 @@ void *Malloc(size_t size)
 {
 	void *ptr;
 	if((ptr = malloc(size)) == NULL)
-	{
 		print_error("malloc");
-	}
 	return ptr;
 }
 
@@ -101,7 +99,7 @@ int main(int argc, char **argv)
 	ssize_t len = 0;
 	ssize_t nread;
 	int pid;
-
+	char **arg;
 	if(argc > 2)
 	{
 		fprintf(stderr, "usage: %s [batch-file]\n", argv[0]);
@@ -117,12 +115,10 @@ int main(int argc, char **argv)
 		printf("%s", prompt);
 		if((nread = getline(&line, &len, stream)) != -1)
 		{
-			char *arg[MAX_ARGS] = {'\0'};
+			arg = calloc(MAX_ARGS, 8);
 			parse_line(line, arg);
 			if(!is_built_in(arg[0]))
-			{
 				execute_cmd(arg);
-			}
 			else
 			{
 				if(strcmp(arg[0], "cd") == 0)
@@ -132,10 +128,9 @@ int main(int argc, char **argv)
 				if(strcmp(arg[0], "exit") == 0)
 					exit(0);
 			}
+			free(arg);
 		} else
-		{
 			break;
-		}
 	}
 	free(line);
 	fclose(stream);
