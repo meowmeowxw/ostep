@@ -2,8 +2,7 @@ CFLAGS=-Wall -Werror -g -D_THREAD_SAFE -D_REENTRANT -D_POSIX_C_SOURCE=200112L \
 	   -D_GNU_SOURCE -I../include
 LFLAGS=-lpthread
 
-SRCS	:= ./es04-pizza-zozzo.c \
-	./es05-foreign-legion.c
+SRCS	:= ./es01-flinstones.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}

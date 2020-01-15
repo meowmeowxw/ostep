@@ -1,0 +1,4 @@
+/home/meowmeow/.vimrc
+/home/meowmeow/.config/nvim/init.vim
+/home/meowmeow/CTF/advent/chall07/exploit.py
+
