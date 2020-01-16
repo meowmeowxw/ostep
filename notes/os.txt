@@ -94,18 +94,18 @@ Limited Direct Execution
 -------------------------------------------------------------------------------
 
 The CPU should support at least two modes of execution: a restricted user
-mode and a privileged (non--restricted) kernel mode.
+mode and a privileged (non-restricted) kernel mode.
 
 Typical user applications run in user mode (In this way the process can't
 issue I/O directly to the disk or other privileged actions), and use a system
 call to trap into the kernel to request operating system services.
 
 The trap instruction saves register state carefully, changes the hardware
-status to kernel mode, and jumps into the OS to a pre--specified destination:
+status to kernel mode, and jumps into the OS to a pre-specified destination:
 the trap table.
 
 When the OS finishes servicing a system call, it returns to the user program
-via another special return--from-trap instruction, which reduces privilege
+via another special return-from-trap instruction, which reduces privilege
 and returns control to the instruction after the trap that jumped into the OS.
 
 The trap tables must be set up by the OS at boot time, and make sure that
@@ -115,8 +115,61 @@ without loss of OS control.
 
 Once a program is running, the OS must use hardware mechanisms to ensure the
 user program does not run forever, namely the timer interrupt. This approach
-is a non--cooperative approach to CPU scheduling.
+is a non-cooperative approach to CPU scheduling.
 
 Sometimes the OS, during a timer interrupt or system call, might wish to
-switch from running the current process to a different one, a low--level
-technique known as a context switch.
+switch from running the current process to a different one, a low-level
+technique known as a context switch. This decision is taken by the scheduler 
+using a scheduling policy.
+
+
+-------------------------------------------------------------------------------
+Scheduling
+-------------------------------------------------------------------------------
+
+The first thing we need to do is to introduce the assumptions about the 
+processes running in the system (workload). Possible workload assumptions:
+
+1. Each job runs for the same amount of time.
+2. All jobs arrive at the same time.
+3. Once started, each job runs to completion.
+4. All jobs only use the CPU (i.e., they perform no I/O)
+5. The run-time of each job is known.
+
+To measure how well a scheduling policy behave we need to define the scheduling
+metric. The easiest metric is the turnaround time.
+The turnaround time of a job is defined as the time at which the job 
+completes minus the time at which the job arrived in the system:
+
+T_turnaround = T_completion - T_arrival
+
+-------
+FIFO
+-------
+
+Let's start using only the assumption 1. and suppose that the policy is FIFO 
+(First-In-First-Out).
+
+Let's assume that a job completes in 10 seconds, and job A, B, C arrive in the 
+system at roughly the same time (T_arrival = 0).
+
+Job A (0 -> 10)
+Job B (0 -> 20)
+Job C (0 -> 30)
+
+In this case average T_turnaround = 10 + 20 + 30 / 3 = 20, which is a good time.
+
+Now let's relax assumption 1. and suppose that A runs 100 seconds, while B and 
+C for 10 seconds.
+
+Job A (0 -> 100)
+Job B (0 -> 110)
+Job C (0 -> 120)
+
+Average T_turnaround = 100 + 110 + 120 / 3 = 110, which is terrible.
+
+-------
+SJF
+-------
+
+
