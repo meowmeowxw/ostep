@@ -156,7 +156,8 @@ Job A (0 -> 10)
 Job B (0 -> 20)
 Job C (0 -> 30)
 
-In this case average T_turnaround = 10 + 20 + 30 / 3 = 20, which is a good time.
+In this case average T_turnaround = (10 + 20 + 30) / 3 = 20 s, 
+which is a good time.
 
 Now let's relax assumption 1. and suppose that A runs 100 seconds, while B and 
 C for 10 seconds.
@@ -165,7 +166,7 @@ Job A (0 -> 100)
 Job B (0 -> 110)
 Job C (0 -> 120)
 
-Average T_turnaround = 100 + 110 + 120 / 3 = 110, which is terrible.
+Average T_turnaround = (100 + 110 + 120) / 3 = 110 s, which is terrible.
 
 -------
 SJF
@@ -178,7 +179,7 @@ Job B (0 -> 10)
 Job C (0 -> 20)
 Job A (0 -> 120)
 
-Average T_turnaround = 10 + 20 + 120 / 3 = 50 which is way better than FIFO.
+Average T_turnaround = (10 + 20 + 120) / 3 = 50 s which is way better than FIFO.
 
 Now let's relax assumption 2, and suppose that A arrives at t = 0, while B and C 
 arrives at t = 10 and both run for 10 seconds.
@@ -187,9 +188,21 @@ Job A (0 -> 100)
 Job B (10 -> 110)
 Job C (10 -> 120)
 
-Average T_turnaround = 100 + (110 - 10) + (120 - 10) / 3 = 103.33.
+Average T_turnaround = (100 + (110 - 10) + (120 - 10)) / 3 = 103.33 s.
 
 -------
 STCF
 -------
+
+TO address this concern, we need to relax assumption 3.
+
+Using a STCF (Shortest Time to Completion First) policy the above case will be
+scheduled as:
+
+Job A (0 -> 10)
+Job B (10 -> 20)
+Job C (10 -> 30)
+Job A (30 -> 120)
+
+Average T_turnaround = ((120 - 0) + (20 - 10) + (30 - 10)) / 3 = 50 s.
 
