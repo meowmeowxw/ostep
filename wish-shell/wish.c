@@ -16,19 +16,29 @@ int arg_count = 0;
 char *path_output = NULL;
 char *path_error = NULL;
 
-void print_error(char *msg);
+void *Calloc(size_t nmemb);
 void *Malloc(size_t size);
+void print_error(char *msg);
 void parse_line(char *line, char **arg);
 void execute_path(char **arg);
 void execute_cd(char **arg);
-int is_built_int(char *cmd);
 void execute_cmd(char **arg);
-int check_redirection(char **arg);
 void reduce_arg(char **arg);
+void del(char **arg);
+int is_built_int(char *cmd);
+int check_redirection(char **arg);
 
 void print_error(char *msg) {
 	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 	exit(1);
+}
+
+void *Calloc(size_t nmemb) {
+	void *ptr;
+	if((ptr = calloc(nmemb, sizeof(intptr_t))) == NULL) {
+		print_error("calloc");	
+	}
+	return ptr;
 }
 
 void *Malloc(size_t size) {
@@ -57,7 +67,7 @@ void parse_line(char *line, char **arg) {
 			puts("shit");
 			exit(1);
 		}
-		arg[index] = Malloc(count);
+		arg[index] = Calloc(count);
 		line -= count;
 		memcpy(arg[index], line, count);
 		line += count;
@@ -86,6 +96,13 @@ int is_built_in(char *cmd) {
 	return 0;
 }
 
+void print_arg(char **arg) {
+	int i;
+	for(i = 0; i < arg_count; i++) {
+		printf("%s\t", arg[i]);
+	}
+	printf("arg_count: %d\n", arg_count);
+}
 void execute_cmd(char **arg) {
 	pid_t pid;
 	int status;
@@ -114,8 +131,9 @@ void execute_cmd(char **arg) {
 				}
 				close(f_output);
 			}
+			reduce_arg(arg);
 		}
-		reduce_arg(arg);
+		print_arg(arg);
 		if (execvp(arg[0], arg) == -1) {
 			print_error("execvp");
 		}
@@ -123,17 +141,21 @@ void execute_cmd(char **arg) {
 	} else {
 		waitpid(pid, &status, 0);
 		int exit_status = WEXITSTATUS(status);
-		printf("%u  \n", exit_status);
+		if(exit_status != 0) {
+			printf("%u  \n", exit_status);
+		}
 	}
 }
 
 void reduce_arg(char **arg)
 {
-	for(int i = arg_count; i < sizeof(arg); i++) {
+	int i;
+	for(i = arg_count; i < sizeof(arg); i++) {
 		free(arg[i]);
 		arg[i] = NULL;
 	}
 }
+
 void print_prompt()
 {
 	char *cwd = get_current_dir_name();
@@ -167,36 +189,38 @@ int check_redirection(char **arg)
 
 void del(char **arg) {
 	int i;
-	for(i = 0; i < arg_count; i++) {
+	for(i = 0; i <= arg_count; i++) {
 		free(arg[i]);
 		arg[i] = NULL;
 	}
 	free(arg);
+	arg = NULL;
 }
 
 int main(int argc, char **argv) {
-	char **arg;
+	char **arg = NULL;
 	FILE *stream = stdin;
 	char *line = NULL;
-	ssize_t len = 0;
+	size_t len = 0;
 	ssize_t nread;
-	int pid;
 
 	if (argc > 2) {
 		fprintf(stderr, "usage: %s [batch-file]\n", argv[0]);
 		exit(2);
 	}
+
 	if (argc == 2) {
 		if ((stream = fopen(argv[1], "r")) == NULL) {
 			print_error("fopen");
 		}
 	}
+
 	while (1) {
 		path_output = NULL;
 		path_error = NULL;
 		print_prompt();
 		if ((nread = getline(&line, &len, stream)) != -1) {
-			arg = calloc(MAX_ARGS, sizeof(intptr_t));
+			arg = Calloc(MAX_ARGS);
 			parse_line(line, arg);
 			if (!is_built_in(arg[0])) {
 				execute_cmd(arg);
@@ -211,7 +235,9 @@ int main(int argc, char **argv) {
 					exit(0);
 				}
 			}
-			free(arg);
+			del(arg);
+			free(line);
+			line = NULL;
 		} else {
 			break;
 		}
