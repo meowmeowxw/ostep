@@ -1,8 +1,8 @@
 What happens when a program runs?
 
-------------------------------------------------
+-------------------------------------------------------------------------------
 Too many things.. :(
-------------------------------------------------
+-------------------------------------------------------------------------------
 
 It does one very simple thing: it executes instruction. To do that the CPU
 fetches an instruction from memmory, decodes it and exectues it. The CPU
@@ -10,122 +10,113 @@ repeats this cycle until the program completes.
 
 However when a program runs, a lot of other things are going on.
 
-There is a body of software, in fact, that is responsible for making it
-easy to run programs, allowing programs to share memory, enabling programs
-to interact with devices, and other fun stuff like that. This system is called
+There is a body of software, in fact, that is responsible for making it easy
+to run programs, allowing programs to share memory, enabling programs to
+interact with devices, and other fun stuff like that. This system is called
 the operating system (OS).
 
-The primary way the OS does this is through a general technique that
-we call virtualization. That is, the OS takes a physical resource (such as
-the processor, or memory, or a disk) and transforms it into a more general, 
-powerful, and easy-to-use virtual form of itself. 
+The primary way the OS does this is through a general technique that we
+call virtualization. That is, the OS takes a physical resource (such as
+the processor, or memory, or a disk) and transforms it into a more general,
+powerful, and easy--to-use virtual form of itself.
 
-The OS also provides some interfaces (APIs) that you can call. 
-A typical OS, in fact, exports a few hundred system calls that are available to 
-applications.
+The OS also provides some interfaces (APIs) that you can call.  A typical OS,
+in fact, exports a few hundred system calls that are available to applications.
 
-Turning a single CPU (or small set of them) into a seemingly infinite number 
-of CPUs and thus allowing many programs to seemingly run at once is what we 
+Turning a single CPU (or small set of them) into a seemingly infinite number
+of CPUs and thus allowing many programs to seemingly run at once is what we
 call virtualizing the CPU.
 
-Each process accesses its own private virtual address space, which the OS 
-somehow maps onto the physical memory of the machine.
-A memory reference within one running program does not affect the address 
-space of other processes (or the OS itself); as far as the running program is 
-concerned, it has physical memory all to itself (Virtualizing memory). 
-The reality, however, is that physical memory is a shared resource, managed by 
-the operating system. 
+Each process accesses its own private virtual address space, which the OS
+somehow maps onto the physical memory of the machine.  A memory reference
+within one running program does not affect the address space of other processes
+(or the OS itself); as far as the running program is concerned, it has
+physical memory all to itself (Virtualizing memory).  The reality, however,
+is that physical memory is a shared resource, managed by the operating system.
 
-------------------------------------------------
+-------------------------------------------------------------------------------
 Process
-------------------------------------------------
+-------------------------------------------------------------------------------
 
-The process is the major OS abstraction of a running program. At
-any point in time, the process can be described by its state: the contents
-of memory in its address space, the contents of CPU registers
-(including the program counter and stack pointer, among others),
-and information about I/O (such as open files which can be read or
-written).
+The process is the major OS abstraction of a running program. At any point
+in time, the process can be described by its state: the contents of memory
+in its address space, the contents of CPU registers (including the program
+counter and stack pointer, among others), and information about I/O (such
+as open files which can be read or written).
 
-The process API consists of calls programs can make related to processes. 
+The process API consists of calls programs can make related to processes.
 Typically, this includes creation, destruction, and other useful calls.
 
-Processes exist in one of many different process states, including
-running, ready to run, and blocked. Different events (e.g., getting
-scheduled or descheduled, or waiting for an I/O to complete) transition
-a process from one of these states to the other.
+Processes exist in one of many different process states, including running,
+ready to run, and blocked. Different events (e.g., getting scheduled or
+descheduled, or waiting for an I/O to complete) transition a process from
+one of these states to the other.
 
-A process list contains information about all processes in the sys-
-tem. Each entry is found in what is sometimes called a process
-control block (PCB), which is really just a structure that contains
-information about a specific process.
+A process list contains information about all processes in the sys-- tem. Each
+entry is found in what is sometimes called a process control block (PCB), which
+is really just a structure that contains information about a specific process.
 
-------------------------------------------------
+-------------------------------------------------------------------------------
 Process API
-------------------------------------------------
+-------------------------------------------------------------------------------
 
-Each process has a name; in most systems, that name is a number
-known as a process ID (PID).
+Each process has a name; in most systems, that name is a number known as a
+process ID (PID).
 
 The fork() system call is used in UNIX systems to create a new process.
-The creator is called the parent; the newly created process is
-called the child. As sometimes occurs in real life [J16], the child
-process is a nearly identical copy of the parent.
+The creator is called the parent; the newly created process is called the
+child. As sometimes occurs in real life [J16], the child process is a nearly
+identical copy of the parent.
 
 The wait() system call allows a parent to wait for its child to complete
 execution.
 
-The exec() family of system calls allows a child to break free from
-its similarity to its parent and execute an entirely new program.
+The exec() family of system calls allows a child to break free from its
+similarity to its parent and execute an entirely new program.
 
-A U NIX shell commonly uses fork(), wait(), and exec() to
-launch user commands; the separation of fork and exec enables features 
-like input/output redirection, pipes, and other cool features,
-all without changing anything about the programs being run.
+A U NIX shell commonly uses fork(), wait(), and exec() to launch user
+commands; the separation of fork and exec enables features like input/output
+redirection, pipes, and other cool features, all without changing anything
+about the programs being run.
 
-Process control is available in the form of signals, which can cause
-jobs to stop, continue, or even terminate.
+Process control is available in the form of signals, which can cause jobs
+to stop, continue, or even terminate.
 
-Which processes can be controlled by a particular person is encapsulated
-in the notion of a user; the operating system allows multiple
-users onto the system, and ensures users can only control their own
-processes.
+Which processes can be controlled by a particular person is encapsulated in
+the notion of a user; the operating system allows multiple users onto the
+system, and ensures users can only control their own processes.
 
-A superuser can control all processes (and indeed do many other
-things); this role should be assumed infrequently and with caution
-for security reasons.
+A superuser can control all processes (and indeed do many other things);
+this role should be assumed infrequently and with caution for security reasons.
 
-------------------------------------------------
+-------------------------------------------------------------------------------
 Limited Direct Execution
-------------------------------------------------
+-------------------------------------------------------------------------------
 
-The CPU should support at least two modes of execution: a restricted user mode 
-and a privileged (non-restricted) kernel mode.
+The CPU should support at least two modes of execution: a restricted user
+mode and a privileged (non--restricted) kernel mode.
 
-Typical user applications run in user mode (In this way the process can't issue
-I/O directly to the disk or other privileged actions), and use a system call
-to trap into the kernel to request operating system services.
+Typical user applications run in user mode (In this way the process can't
+issue I/O directly to the disk or other privileged actions), and use a system
+call to trap into the kernel to request operating system services.
 
 The trap instruction saves register state carefully, changes the hardware
-status to kernel mode, and jumps into the OS to a pre-specified destination:
+status to kernel mode, and jumps into the OS to a pre--specified destination:
 the trap table.
 
-When the OS finishes servicing a system call, it returns to the user
-program via another special return-from-trap instruction, which reduces
-privilege and returns control to the instruction after the trap
-that jumped into the OS.
+When the OS finishes servicing a system call, it returns to the user program
+via another special return--from-trap instruction, which reduces privilege
+and returns control to the instruction after the trap that jumped into the OS.
 
-The trap tables must be set up by the OS at boot time, and make
-sure that they cannot be readily modified by user programs. All
-of this is part of the limited direct execution protocol which runs
-programs efficiently but without loss of OS control.
+The trap tables must be set up by the OS at boot time, and make sure that
+they cannot be readily modified by user programs. All of this is part of
+the limited direct execution protocol which runs programs efficiently but
+without loss of OS control.
 
-Once a program is running, the OS must use hardware mechanisms
-to ensure the user program does not run forever, namely the timer
-interrupt. This approach is a non-cooperative approach to CPU
-scheduling.
+Once a program is running, the OS must use hardware mechanisms to ensure the
+user program does not run forever, namely the timer interrupt. This approach
+is a non--cooperative approach to CPU scheduling.
 
-Sometimes the OS, during a timer interrupt or system call, might
-wish to switch from running the current process to a different one,
-a low-level technique known as a context switch.
-
+Sometimes the OS, during a timer interrupt or system call, might wish to
+switch from running the current process to a different one, a low--level
+technique known as a context switch.
