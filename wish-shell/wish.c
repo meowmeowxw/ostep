@@ -133,7 +133,6 @@ void execute_cmd(char **arg) {
 			}
 			reduce_arg(arg);
 		}
-		print_arg(arg);
 		if (execvp(arg[0], arg) == -1) {
 			print_error("execvp");
 		}
