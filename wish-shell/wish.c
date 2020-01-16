@@ -110,9 +110,10 @@ void execute_cmd(char **arg) {
     }
     if (pid == 0) {
         if (check_redirection(arg) != -1) {
+			printf("%s\t%s\n", path_output, path_error);
             if (path_error != NULL) {
                 int f_error;
-                if ((f_error = open(path_error, O_CREAT | O_WRONLY)) == -1) {
+                if ((f_error = open(path_error, O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1) {
                     print_error("open");
                 }
                 if (dup2(f_error, 2) == -1) {
@@ -122,7 +123,7 @@ void execute_cmd(char **arg) {
             }
             if (path_output != NULL) {
                 int f_output;
-                if ((f_output = open(path_output, O_CREAT | O_WRONLY)) == -1) {
+                if ((f_output = open(path_output, O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1) {
                     print_error("open");
                 }
                 if (dup2(f_output, 1) == -1) {
@@ -162,6 +163,7 @@ void print_prompt() {
 
 int check_redirection(char **arg) {
     int i, j;
+	int ret = -1;
     int quote = 0;
     for (i = 0; i < arg_count; i++) {
         for (j = 0; j < strlen(arg[i]); j++) {
@@ -175,11 +177,13 @@ int check_redirection(char **arg) {
                     path_output = arg[i + 1];
                 }
                 arg_count -= 2;
-                return i;
+				ret = 1;
+				i++;
+				break;
             }
         }
     }
-    return -1;
+    return ret;
 }
 
 void del(char **arg) {
