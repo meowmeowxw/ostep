@@ -119,7 +119,7 @@ is a non-cooperative approach to CPU scheduling.
 
 Sometimes the OS, during a timer interrupt or system call, might wish to
 switch from running the current process to a different one, a low-level
-technique known as a context switch. This decision is taken by the scheduler 
+technique known as a context switch. This decision is taken by the scheduler
 using a scheduling policy.
 
 
@@ -127,82 +127,128 @@ using a scheduling policy.
 Scheduling
 -------------------------------------------------------------------------------
 
-The first thing we need to do is to introduce the assumptions about the 
+The first thing we need to do is to introduce the assumptions about the
 processes running in the system (workload). Possible workload assumptions:
 
-1. Each job runs for the same amount of time.
-2. All jobs arrive at the same time.
-3. Once started, each job runs to completion.
-4. All jobs only use the CPU (i.e., they perform no I/O)
-5. The run-time of each job is known.
+1. Each job runs for the same amount of time.  2. All jobs arrive at the
+same time.  3. Once started, each job runs to completion.  4. All jobs only
+use the CPU (i.e., they perform no I/O) 5. The run-time of each job is known.
 
 To measure how well a scheduling policy behave we need to define the scheduling
-metric. The easiest metric is the turnaround time.
-The turnaround time of a job is defined as the time at which the job 
-completes minus the time at which the job arrived in the system:
+metric. The easiest metric is the turnaround time.  The turnaround time of
+a job is defined as the time at which the job completes minus the time at
+which the job arrived in the system:
 
 T_turnaround = T_completion - T_arrival
 
--------
-FIFO
--------
+------- FIFO -------
 
-Let's start using FIFO (First-In-First-Out) poliicy
+Let's start using FIFO (First-In-First-Out) policy.
 
-Assume that a job completes in 10 seconds, and job A, B, C arrive in the 
+Assume that a job completes in 10 seconds, and job A, B, C arrive in the
 system at roughly the same time (T_arrival = 0).
 
-Job A (0 -> 10)
-Job B (0 -> 20)
+Job A (0 -> 10) 
+Job B (0 -> 20) 
 Job C (0 -> 30)
 
-In this case average T_turnaround = (10 + 20 + 30) / 3 = 20 s, 
-which is a good time.
+In this case average T_turnaround = (10 + 20 + 30) / 3 = 20 s, which is a
+good time.
 
-Now let's relax assumption 1. and suppose that A runs 100 seconds, while B and 
-C for 10 seconds.
+Now let's relax assumption 1. and suppose that A runs 100 seconds, while B
+and C for 10 seconds.
 
-Job A (0 -> 100)
-Job B (0 -> 110)
+Job A (0 -> 100) 
+Job B (0 -> 110) 
 Job C (0 -> 120)
 
 Average T_turnaround = (100 + 110 + 120) / 3 = 110 s, which is terrible.
 
--------
-SJF
--------
+------- SJF -------
 
 SJF (Shortest Job First) run the shortest job first (wow), then the next
 shortest, and so on. If we take the precedent case:
 
-Job B (0 -> 10)
-Job C (0 -> 20)
+Job B (0 -> 10) 
+Job C (0 -> 20) 
 Job A (0 -> 120)
 
-Average T_turnaround = (10 + 20 + 120) / 3 = 50 s which is way better than FIFO.
+Average T_turnaround = (10 + 20 + 120) / 3 = 50 s which is way better
+than FIFO.
 
-Now let's relax assumption 2, and suppose that A arrives at t = 0, while B and C 
-arrives at t = 10 and both run for 10 seconds.
+Now let's relax assumption 2, and suppose that A arrives at t = 0, while B
+and C arrives at t = 10 and both run for 10 seconds.
 
 Job A (0 -> 100)
-Job B (10 -> 110)
+Job B (10 -> 110) 
 Job C (10 -> 120)
 
 Average T_turnaround = (100 + (110 - 10) + (120 - 10)) / 3 = 103.33 s.
 
--------
-STCF
--------
+------- STCF -------
 
 TO address this concern, we need to relax assumption 3.
 
-Using a STCF (Shortest Time to Completion First) policy the above case will be
-scheduled as:
+Using a STCF (Shortest Time to Completion First) policy the above case will
+be scheduled as:
 
-Job A (0 -> 10)
-Job B (10 -> 20)
-Job C (10 -> 30)
+Job A (0 -> 10) 
+Job B (10 -> 20) 
+Job C (10 -> 30) 
 Job A (30 -> 120)
 
 Average T_turnaround = ((120 - 0) + (20 - 10) + (30 - 10)) / 3 = 50 s.
+
+Thus, if we knew job lengths, and that jobs only used the CPU, and our
+only metric was turnaround time, STCF would be a great policy. However, the
+introduction of time-shared machines changed all that.  Now users would sit
+at a terminal and demand interactive performance from the system as well. And
+thus, a new metric was born: response time.
+
+We define response time as the time from when job arrives to the system to
+the first time is scheduled.
+
+T_response = T_firstrun - T_arrival
+
+If A has T_arrival = 0, B T_arrival = 10, C T_arrival = 10, and each job
+lasts for 10 seconds then
+
+Average T_response = (0 + 0 + 10) / 3 = 3.33 s
+
+In this case STCF and SJF are not particularly good for response time.
+
+------- RR -------
+
+RR (Round Robin) don't wait for jobs to finish, instead it runs job for a
+time slice and then switches to the next job in the run queue.
+
+Assume A, B, C arrive at the same time in the system and each wish to run
+for 3 seconds. If we set a time slice of 1 RR behave this way:
+
+A (0 -> 1) 
+B (1 -> 2) 
+C (1 -> 3) 
+A (3 -> 4) 
+B (4 -> 5) 
+C (5 -> 6) 
+A (6 -> 7) 
+B (7 -> 8) 
+C (8 -> 9)
+
+Average T_response = (0 + 1 + 2) / 3 = 1 s.
+
+With SJF:
+
+Average T_response = (0 + 3 + 6) / 3 = 3 s.
+
+It sounds a good idea to set a very small time slice, however the cost of a
+context switch is pretty big since the system must save/restore registers,
+TLB, branch predictors and other on-chip hardware.
+
+How good is turnaround time?
+
+Average T_turnaround = (7 + 8 + 9) / 3 = 8 s which is awful.
+
+We can see that there isn't a perfect policy for scheduling and we need to
+trade the T_response for T_turnaround.
 
