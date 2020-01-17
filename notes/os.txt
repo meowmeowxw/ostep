@@ -289,5 +289,69 @@ A  (40 -> 50)
 A' (50 -> 60)
 B  (50 -> 60)
 
-Which is we way more efficient.
+Which is way more efficient.
 
+Now relax assumption 5., which is the worst assumption we could make, since
+usually we don't know the duration of each job. How can we build a scheduler
+that behaves like STCF without a priori knowledge and incorporate some ideas
+from RR to optimize response time?
+
+------- MLFQ -------
+
+The MLFQ (Multi Level Feedback Queue) is an approach that can learn and adapts
+based on how jobs behave.
+
+The MLFQ has a number of distinct queues, each assigned a different priority
+level.
+At any given time, a job that is ready to run is on a single queue. MLFQ uses 
+priorities to decide which job should run at a given time: a job with higher 
+priority (i.e., a job on higher queue) is chosen to run.
+
+More than one job may be on a given queue, and thus have the same priority. 
+In this case, we will just use Round-Robin scheduling among those jobs.
+
+Thus, we arrive at the first two basic rules for MLFQ:
+
+Rule 1: If Priority(A) > Priority(B), A runs (B doesn’t).
+Rule 2: If Priority(A) = Priority(B), A & B run in RR.
+
+MLFQ varies the priority of a job based on its observed behavior.
+
+If a job relinquishes the CPU while waiting for input from the keyboard, MLFQ
+will keep its priority high, as this is how an interactive process might 
+behave. If, instead, a job uses the CPU intensively for long periods of time,
+MLFQ will reduce its priority.
+
+Example:
+
+Q5 -> A -> B [High priority]
+Q4
+Q3 -> C
+Q2 
+Q1 -> D [Low priority]
+
+However we need to consider that priority changes over time, and so the jobs
+will be moved between various queues, so wee need to define how the priority 
+changes with new rules:
+
+Rule 3: When a job enters the system, it is placed at the highest priority.
+Rule 4a: If a job uses up an entire time slice while running, its priority is
+reduced.
+Rule 4b: If a job gives up the CPU before the time slice is up, it stays at the
+same priority level.
+
+Rule 3 make the scheduler behaves similar to a SJF, we don't know the length of
+each job so we place it at the top of the queue.
+Rule 4a/b decides when a job need to move between queues. There's problem if a
+job become interactive after being CPU consuming for a while it will remain at
+the lowest priority, so:
+
+Rule 5: After some time period S, move all the jobs in the system to the
+topmost queue (boost).
+
+However there's another problem, if a job gives up the CPU before the time 
+slice is up each time, it can monopolize the CPU and game the scheduler.
+
+Rule 4: Once a job uses up its time allotment at a given level (regardless of 
+how many times it has given up the CPU), its priority is reduced.
+ 
