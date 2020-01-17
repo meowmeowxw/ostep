@@ -364,3 +364,64 @@ of jobs using the utility nice.
 Many systems, including BSD UNIX derivatives, Solaris, and Windows NT and 
 subsequent Windows operating systems use a form of MLFQ as their base scheduler.
 
+------- CFS -------
+
+CFS (Completely Fair Scheduler) is the linux kernel scheduler.
+
+Whereas most schedulers are based around the concept of a fixed time slice, 
+CFS operates a bit differently. Its goal is simple: to fairly divide a CPU 
+evenly among all competing processes. It does so through a simple counting-based 
+technique known as virtual runtime (vruntime).
+
+As each process runs, it accumulates vruntime. In the most basic case, each 
+process’s vruntime increases at the same rate, in proportion with physical
+(real) time. When a scheduling decision occurs, CFS will pick the process with
+the lowest vruntime to run next.
+
+How does the scheduler know when to stop the currently running process, and run
+the next one? If CFS switch too often, fairness is increased, as each job
+receives its share of CPU even over miniscule time windows, but at the cost of 
+performance. However if CFS switch less often, performance is increased but the
+fairness is decreased.
+
+CFS manages this tension through various control parameters. The first is 
+sched_latency. CFS uses this value to determine how long one process one
+process should run before considering a context switch. 
+If sched_latency is set to 48 ms, and there are 4 running process, then CFS 
+divides sched_latency by 4 to arrive at a per-process time slice of 12 ms.
+
+If there are too many processes running in the system, the problem of the
+frequents context switch remains, so CFS add a parameter, min_granularity
+which is set to a value like 6 ms.
+
+CFS also enables controls over process priority to the user with the utility 
+nice. The nice parameter can be set anywhere from -20 to +19, with a default of
+0. The lower the value the higher the priority (The nicer you are, the worst
+you get). At each nice value is associated a weight as follow:
+
+static const int prio_to_weight[40] = {
+/* -20 */	88761, 71755, 56483, 46273, 36291,
+/* -15 */	29154, 23254, 18705, 14949, 11916,
+/* -10 */	9548, 7620, 6100, 4904, 3906,
+/* -5 */	3121, 2501, 1991, 1586, 1277,
+/* 0 */		1024, 820, 655, 526, 423, 
+/* 5 */		335, 272, 215, 172, 137,
+/* 10 */	110, 87, 70, 56, 45,
+/* 15 */	36,  29, 23,  18, 15,
+};
+
+We can use this values to set the time-slice for a process p as:
+
+time_slice_p = (weigth_p / sum_{i=0}^{n-1} weight_i) * sched_latency
+
+and vruntime for a job i:
+
+vruntime_i = vruntime_i + (weight_0 / weight_i) * runtime_i
+
+The focus of CFS is efficiency, so it uses red-black-tree to keep the running
+processes. If a process goes to sleep (waiting I/O..) the process is removed
+from the tree. Processes are ordered in the tree by vruntime, and most
+operations (such as insertion and deletion) are logarithmic in time O(logn).
+
+There are other useful properties of CFS that we will not discuss.
+
