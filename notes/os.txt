@@ -252,3 +252,42 @@ Average T_turnaround = (7 + 8 + 9) / 3 = 8 s which is awful.
 We can see that there isn't a perfect policy for scheduling and we need to
 trade the T_response for T_turnaround.
 
+Now let's relax assumption 4.
+A scheduler clearly has a decision to make when a job initiates an I/O
+request, because the currently-running job won’t be using the CPU during the 
+I/O; it is blocked waiting for I/O completion. If the I/O is sent to a hard 
+disk drive, the process might be blocked for a few milliseconds or longer, 
+depending on the current I/O load of the drive. Thus, the scheduler should 
+probably schedule another job on the CPU at that time.
+
+Suppose that we have two job A, B. A runs for 10 ms and then issue an I/O which
+lasts for 10 ms and it repeat this procedure 3 times. B runs for 30 ms without
+I/O.
+
+If we use a normal SCTF and A runs first then:
+
+A  (0 -> 10)
+A' (10 -> 20) (I/O no CPU usage)
+A  (20 -> 30)
+A' (30 -> 40)
+A  (40 -> 50)
+A' (50 -> 60)
+B  (60 -> 90)
+
+This is not an efficient way to build a scheduler, if we overlap the jobs we
+get this:
+
+A  (0 -> 10)
+A' (10 -> 20)
+B  (10 -> 20)
+
+A  (20 -> 30)
+A' (30 -> 40)
+B  (30 -> 40)
+
+A  (40 -> 50)
+A' (50 -> 60)
+B  (50 -> 60)
+
+Which is we way more efficient.
+
