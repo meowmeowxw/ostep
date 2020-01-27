@@ -15,11 +15,16 @@ int is_full = 0;
 int queue = A;
 
 void print_status_dinosaur() {
-    printf("queue: %d\tpassenger: %d\n", queue, is_full);
+    char q = queue == A ? 'A' : 'B';
+    printf("\ncavemen: %d\ton queue: %c\n", is_full, q);
+    puts("move queue to the other side\n");
+    fflush(stdout);
 }
 
 void print_status_caveman(int id, int myqueue) {
-    printf("id: %d\tmyqueue: %d\n", id, myqueue);
+    char q = myqueue == A ? 'A' : 'B'; 
+    printf("caveman: %d\tis waiting on: %c\n", id, q);
+    fflush(stdout);
 }
 
 void *dinosaur(void *arg) {
@@ -27,8 +32,8 @@ void *dinosaur(void *arg) {
         Pthread_mutex_lock(&lock);
         while (is_full != 2) {
             Pthread_cond_wait(&full, &lock);
-            print_status_dinosaur();
         }
+        print_status_dinosaur();
         is_full = 0;
         queue = (queue + 1) % 2;
         Pthread_cond_broadcast(&turn);
@@ -44,13 +49,13 @@ void *caveman(void *arg) {
     myqueue = *(int *)arg % 2;
     id = *(int *)arg;
     while (1) {
-        print_status_caveman(id, myqueue);
         Pthread_mutex_lock(&lock);
-        while (myqueue != queue) {
+        print_status_caveman(id, myqueue);
+        while (myqueue != queue || is_full == 2) {
             Pthread_cond_wait(&turn, &lock);
         }
         is_full++;
-        printf("caveman: %d incremented\n", id);
+        printf("caveman: %d\tget on\n", id);
         myqueue = (myqueue + 1) % 2;
         Pthread_cond_signal(&full);
         Pthread_mutex_unlock(&lock);
