@@ -10,7 +10,7 @@
 #define B 1
 
 pthread_cond_t ready, turn[2];
-pthread_mutex_t mutex_ticket, mutex_queue;
+pthread_mutex_t mutex;
 int ticket[2] = {0, 0};
 int ticket_go[2] = {0, 0};
 int queue[2] = {0, 0};
@@ -23,12 +23,12 @@ void *bridge(void *arg) {
     int side;
     while (1) {
         side = A;
-        Pthread_mutex_lock(&mutex_queue);
+        Pthread_mutex_lock(&mutex);
         if (queue[A] < queue[B]) {
             side = B;
         }
         while (ticket[side] == ticket_go[side] || free_bridge) {
-            Pthread_cond_wait(&ready, &mutex_queue);
+            Pthread_cond_wait(&ready, &mutex);
         }
         ticket_go[side]++;
         queue[side]--;
@@ -36,7 +36,7 @@ void *bridge(void *arg) {
                point[side]);
         free_bridge = 1;
         Pthread_cond_broadcast(&turn[side]);
-        Pthread_mutex_unlock(&mutex_queue);
+        Pthread_mutex_unlock(&mutex);
     }
     return NULL;
 }
@@ -47,16 +47,15 @@ void *car(void *arg) {
     int side = id % 2;
     int myticket;
     while (1) {
-        Pthread_mutex_lock(&mutex_queue);
+        Pthread_mutex_lock(&mutex);
         myticket = ++ticket[side];
         printf("car[%d]\ttake ticket %d\tpoint %c\n", id, myticket,
                point[side]);
-        // Pthread_mutex_unlock(&mutex_ticket);
 
-        // Pthread_mutex_lock(&mutex_queue);
+        // At the moment only one mutex without too many granularity
         queue[side]++;
         while (myticket != ticket_go[side] || !free_bridge) {
-            Pthread_cond_wait(&turn[side], &mutex_queue);
+            Pthread_cond_wait(&turn[side], &mutex);
         }
         free_bridge = 0;
         printf("car[%d] with ticket %d crosses the bridge from point %c to\
@@ -64,7 +63,7 @@ void *car(void *arg) {
                id, myticket, point[side], point[(side + 1) % 2]);
         sleep(1);
         Pthread_cond_signal(&ready);
-        Pthread_mutex_unlock(&mutex_queue);
+        Pthread_mutex_unlock(&mutex);
         side = (side + 1) % 2;
         printf("car[%d] drives around\n\n", id);
         sleep(3);
@@ -82,8 +81,7 @@ int main(int argc, char **argv) {
     Pthread_cond_init(&ready, NULL);
     Pthread_cond_init(&turn[0], NULL);
     Pthread_cond_init(&turn[1], NULL);
-    Pthread_mutex_init(&mutex_queue, NULL);
-    Pthread_mutex_init(&mutex_ticket, NULL);
+    Pthread_mutex_init(&mutex, NULL);
 
     Pthread_create(&th[NUM_CARS], NULL, bridge, NULL);
     for (i = 0; i < 8; i++) {
