@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
     for(i = 0; i < 8; i++) {
         Pthread_join(th[i], NULL);
     }
+    free(x);
 	return 0;
 }
 
