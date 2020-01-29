@@ -59,8 +59,8 @@ void *car(void *arg) {
             Pthread_cond_wait(&turn[side], &mutex_queue); 
         }
         free_bridge = 0;
-        printf("car[%d] crosses the bridge from point %c to point %c\n", id, 
-                point[side], point[(side + 1) % 2]);
+        printf("car[%d] with ticket %d crosses the bridge from point %c to\
+point %c\n", id, myticket, point[side], point[(side + 1) % 2]);
         sleep(1);
         Pthread_cond_signal(&ready);
         Pthread_mutex_unlock(&mutex_queue);
