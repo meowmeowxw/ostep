@@ -84,12 +84,12 @@ int main(int argc, char **argv) {
     Pthread_mutex_init(&mutex, NULL);
 
     Pthread_create(&th[NUM_CARS], NULL, bridge, NULL);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < NUM_CARS; i++) {
         x[i] = i;
         Pthread_create(&th[i], NULL, car, &x[i]);
     }
     Pthread_join(th[NUM_CARS], NULL);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < NUM_CARS; i++) {
         Pthread_join(th[i], NULL);
     }
     free(x);
