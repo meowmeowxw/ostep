@@ -7,13 +7,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-double Time_GetSeconds() {
-    struct timeval t;
-    int rc = gettimeofday(&t, NULL);
-    assert(rc == 0);
-    return (double)((double)t.tv_sec + (double)t.tv_usec / 1e6);
-}
-
 void Pthread_mutex_init(pthread_mutex_t *mutex,
                         const pthread_mutexattr_t *attr) {
     int rc = pthread_mutex_init(mutex, attr);
@@ -71,17 +64,25 @@ void Pthread_cond_destroy(pthread_cond_t *cond) {
     assert(rc == 0);
 }
 
+void Pthread_mutexattr_init(pthread_mutexattr_t *attr) {
+    int rc = pthread_mutexattr_init(attr);
+    assert(rc == 0);
+}
+
+void Pthread_condattr_init(pthread_condattr_t *attr) {
+    int rc = pthread_condattr_init(attr);
+    assert(rc == 0);
+}
+
+void Pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int pshared) {
+    int rc = pthread_mutexattr_setpshared(attr, pshared);
+    assert(rc == 0);
+}
+
+void Pthread_condattr_setpshared(pthread_condattr_t *attr, int pshared) {
+    int rc = pthread_condattr_setpshared(attr, pshared);
+    assert(rc == 0);
+}
+
 #endif // __MYTHREADS_h__
 
-#ifndef __MALLOC__
-#define __MALLOC
-void *Malloc(size_t size) {
-    void *ptr;
-    ptr = malloc(size);
-    if (ptr == NULL) {
-        fprintf(stderr, "malloc failed\n");
-        exit(1);
-    }
-    return ptr;
-}
-#endif // __MALLOC__
