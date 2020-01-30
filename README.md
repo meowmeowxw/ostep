@@ -6,7 +6,8 @@ Operating Systems: Three Easy Pieces Exercises And Projects
 4. [Notes](./notes) - various notes about the three modules above
 
 5. [Wish-Shell](./wish-shell) - shell project
---
+
+-------------------------------------------------------------------------------
 
 In [Class-exercises](./class-exercises) there are exercises (with the
 assignments written in italian) of my university class on operating systems,
