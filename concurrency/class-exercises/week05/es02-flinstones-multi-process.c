@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <limits.h> /* for OPEN_MAX */
+#include <mythreads.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <signal.h>
@@ -17,7 +18,6 @@
 #include <sys/wait.h>
 #include <time.h>   /* timespec{} for pselect() */
 #include <unistd.h> /* exit() etc */
-#include <mythreads.h>
 
 #define NUM_CAVEMEN 3
 #define A 0
@@ -40,7 +40,7 @@ void print_status_dinosaur() {
 }
 
 void print_status_caveman(int id, int myqueue) {
-    char q = myqueue == A ? 'A' : 'B'; 
+    char q = myqueue == A ? 'A' : 'B';
     printf("caveman: %d\tis waiting on: %c\n", id, q);
     fflush(stdout);
 }
@@ -86,15 +86,15 @@ int main(int argc, char **argv) {
     int shared_seg_size = sizeof(shared_buffer);
     pthread_mutexattr_t mattr;
     pthread_condattr_t cvattr;
-    
+
     shmfd = shm_open("/pedala", O_CREAT | O_RDWR, S_IRWXU);
     assert(shmfd >= 0);
-    rc = ftruncate(shmfd, shared_seg_size); 
+    rc = ftruncate(shmfd, shared_seg_size);
     assert(rc == 0);
 
-    shr_buff = (shared_buffer *)mmap(NULL, shared_seg_size, PROT_READ | 
-            PROT_WRITE, MAP_SHARED, shmfd, 0);
-    
+    shr_buff = (shared_buffer *)mmap(
+        NULL, shared_seg_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0);
+
     shr_buff->queue = A;
     shr_buff->is_full = 0;
     pthread_mutexattr_init(&mattr);
@@ -120,4 +120,3 @@ int main(int argc, char **argv) {
     wait(NULL);
     pthread_exit(NULL);
 }
-
