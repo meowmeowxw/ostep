@@ -1,9 +1,9 @@
+#include <mythreads.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <time.h>
-#include <mythreads.h>
+#include <unistd.h>
 
 #define NUM_SOBERS 4
 #define MAX 2
@@ -29,9 +29,13 @@ void *funicular(void *arg) {
         sleep(1);
         puts("tour ended\n");
         Pthread_cond_broadcast(&end);
+        // while the funicular is not empty we can't let other passenger get
+        // inside
         while (is_empty != 0) {
             Pthread_cond_wait(&start, &mutex);
         }
+        // at the end of the tour and when the funicular is empty we can
+        // broadcast the status
         is_full = 0;
         Pthread_cond_broadcast(&ready);
         Pthread_mutex_unlock(&mutex);
@@ -50,6 +54,8 @@ void *sober(void *arg) {
         Pthread_mutex_unlock(&mutex_ticket);
 
         Pthread_mutex_lock(&mutex);
+        // wait until is not my turn, or the funicular is full or my ticket
+        // is not valid yet
         while (myticket != ticket_go || is_full >= MAX) {
             printf("passenger %d wait...\n", id);
             Pthread_cond_wait(&ready, &mutex);
@@ -57,11 +63,17 @@ void *sober(void *arg) {
         is_full++;
         ticket_go++;
         printf("passenger %d with ticket %d get on funicular\n", id, myticket);
-        if (is_full == 2) {
+        // if the cabine is full then we need to signal the funicular,
+        // otherwise, other passengers can enjoy the tour with us and we let
+        // them know
+        if (is_full == MAX) {
             Pthread_cond_signal(&full);
         } else {
             Pthread_cond_broadcast(&ready);
         }
+
+        // wait until the tour is ended and we signal to the funicular that we
+        // got out
         Pthread_cond_wait(&end, &mutex);
         printf("passenger %d left\n", id);
         is_empty--;
@@ -83,7 +95,7 @@ int main(int argc, char **argv) {
     Pthread_cond_init(&full, NULL);
     Pthread_cond_init(&start, NULL);
     Pthread_cond_init(&end, NULL);
-    
+
     Pthread_create(&fun, NULL, funicular, NULL);
     for (i = 0; i < NUM_SOBERS; i++) {
         x[i] = i;
@@ -93,6 +105,5 @@ int main(int argc, char **argv) {
     for (i = 0; i < NUM_SOBERS; i++) {
         Pthread_join(th[i], NULL);
     }
-	return 0;
+    return 0;
 }
-
