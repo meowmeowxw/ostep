@@ -74,8 +74,7 @@ void *sober(void *arg) {
 int main(int argc, char **argv) {
     setbuf(stdout, NULL);
     int i;
-    //int x[NUM_SOBERS];
-    int *x = malloc(sizeof(int) * NUM_SOBERS);
+    int x[NUM_SOBERS];
     pthread_t th[NUM_SOBERS];
     pthread_t fun;
     Pthread_mutex_init(&mutex, NULL);
