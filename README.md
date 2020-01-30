@@ -5,11 +5,11 @@ Operating Systems: Three Easy Pieces Exercises And Projects
 3. [Persistence](./persistence) - file systems
 4. [Notes](./notes) - various notes about the three modules above
 
-5. [Wish-Shell](./wish-shell) - shell project
+5. [Wish](./wish-shell) - shell project
 
 -------------------------------------------------------------------------------
 
-In [Class-exercises](./class-exercises) there are exercises (with the
+In [Class Exercises](./class-exercises) there are exercises (with the
 assignments written in italian) of my university class on operating systems,
 mostly are about concurrency and shell scripts.
 
