@@ -64,9 +64,8 @@ void *car(void *arg) {
         sleep(1);
         Pthread_cond_signal(&ready);
         Pthread_mutex_unlock(&mutex);
-        side = (side + 1) % 2;
         printf("car[%d] drives around\n\n", id);
-        sleep(3);
+        sleep(5);
     }
     return NULL;
 }
