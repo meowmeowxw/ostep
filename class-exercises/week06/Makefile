@@ -3,7 +3,8 @@ CFLAGS=-g -D_THREAD_SAFE -D_REENTRANT -D_POSIX_C_SOURCE=200112L \
 LFLAGS=-lpthread
 
 SRCS	:= ./es01-bridge.c \
-	./es02-bridge.c
+	./es02-bridge.c \
+	./es01-funicular.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
