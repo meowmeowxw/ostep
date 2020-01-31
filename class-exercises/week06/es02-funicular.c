@@ -2,22 +2,17 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <limits.h> /* for OPEN_MAX */
 #include <mythreads.h>
-#include <pthread.h>
-#include <semaphore.h>
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>   /* per strerror_r  and  memset */
-#include <sys/mman.h> /* shm_* stuff, and mmap() */
+#include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/time.h> /* timeval{} for select() */
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <time.h>   /* timespec{} for pselect() */
-#include <unistd.h> /* exit() etc */
+#include <time.h>
+#include <unistd.h>
 
 #define NUM_SOBERS 4
 #define NUM_DRUNKS 2
@@ -134,10 +129,10 @@ int main(int argc, char **argv) {
     assert(shmfd >= 0);
     rc = ftruncate(shmfd, shared_seg_size);
     assert(rc == 0);
-    
+
     shr_buff = (shared_buffer *)mmap(
         NULL, shared_seg_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0);
-    assert(shr_buff != MAP_FAILED); 
+    assert(shr_buff != MAP_FAILED);
     shr_buff->is_full = 0;
     shr_buff->is_empty = 0;
     shr_buff->ticket = 0;
@@ -153,31 +148,31 @@ int main(int argc, char **argv) {
     Pthread_cond_init(&shr_buff->full, &cvattr);
     Pthread_cond_init(&shr_buff->start, &cvattr);
     Pthread_cond_init(&shr_buff->end, &cvattr);
-    
-    switch(fork()) {
+
+    switch (fork()) {
+    case -1:
+        fprintf(stderr, "error fork\n");
+        exit(0);
+        break;
+    case 0:
+        funicular();
+        exit(0);
+        break;
+    default:
+        break;
+    }
+    for (i = 0; i < NUM_SOBERS; i++) {
+        switch (fork()) {
         case -1:
             fprintf(stderr, "error fork\n");
             exit(0);
             break;
         case 0:
-            funicular();
+            sober(i);
             exit(0);
             break;
         default:
             break;
-    }
-    for (i = 0; i < NUM_SOBERS; i++) {
-        switch(fork()) {
-            case -1:
-                fprintf(stderr, "error fork\n");
-                exit(0);
-                break;
-            case 0:
-                sober(i);
-                exit(0);
-                break;
-            default:
-                break;
         }
     }
     wait(NULL);
