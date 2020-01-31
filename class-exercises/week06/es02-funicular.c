@@ -104,9 +104,6 @@ int main(int argc, char **argv) {
     int shmfd;
     int rc;
     int shared_seg_size = sizeof(shared_buffer);
-    int x[NUM_SOBERS];
-    pthread_t th[NUM_SOBERS];
-    pthread_t fun;
     pthread_mutexattr_t mattr;
     pthread_condattr_t cvattr;
 

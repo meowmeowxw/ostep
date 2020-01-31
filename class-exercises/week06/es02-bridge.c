@@ -18,8 +18,6 @@ char point[2] = {'A', 'B'};
 int free_bridge = 0;
 
 void *bridge(void *arg) {
-    setbuf(stdout, NULL);
-    int id = *(int *)arg;
     sleep(2);
     int side;
     int other_side;
@@ -54,7 +52,6 @@ void *bridge(void *arg) {
 }
 
 void *car(void *arg) {
-    setbuf(stdout, NULL);
     int id = *(int *)arg;
     int side = id % 2;
     int other_side = (side + 1) % 2;
