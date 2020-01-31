@@ -25,10 +25,10 @@
 
 typedef struct __shared_buffer {
     pthread_mutex_t lock;
-    pthread_cond_t full,
-                   turn;
-    int is_full,
-        queue;
+    pthread_cond_t full;
+    pthread_cond_t turn;
+    int is_full;
+    int queue;
 } shared_buffer;
 
 shared_buffer *shr_buff;
@@ -82,9 +82,10 @@ void *caveman(int id) {
 
 int main(int argc, char **argv) {
     // Without error checks :/
-    int shmfd, rc;
-    pid_t pid;
+    int shmfd;
+    int rc;
     int shared_seg_size = sizeof(shared_buffer);
+    pid_t pid;
     pthread_mutexattr_t mattr;
     pthread_condattr_t cvattr;
 

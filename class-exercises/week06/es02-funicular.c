@@ -24,16 +24,16 @@
 #define MAX 2
 
 typedef struct __shared_buffer {
-    pthread_mutex_t mutex,
-                    mutex_ticket;
-    pthread_cond_t ready,
-                   full,
-                   start,
-                   end;
-    int is_full,
-        is_empty,
-        ticket,
-        ticket_go;
+    pthread_mutex_t mutex;
+    pthread_mutex_t mutex_ticket;
+    pthread_cond_t ready;
+    pthread_cond_t full;
+    pthread_cond_t start;
+    pthread_cond_t end;
+    int is_full;
+    int is_empty;
+    int ticket;
+    int ticket_go;
 } shared_buffer;
 
 shared_buffer *shr_buff;
@@ -121,7 +121,8 @@ void sober(int id) {
 int main(int argc, char **argv) {
     setbuf(stdout, NULL);
     int i;
-    int shmfd, rc;
+    int shmfd;
+    int rc;
     int shared_seg_size = sizeof(shared_buffer);
     int x[NUM_SOBERS];
     pthread_t th[NUM_SOBERS];
