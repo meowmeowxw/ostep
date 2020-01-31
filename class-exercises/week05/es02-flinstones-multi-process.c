@@ -25,9 +25,10 @@
 
 typedef struct __shared_buffer {
     pthread_mutex_t lock;
-    pthread_cond_t full, turn;
-    int is_full;
-    int queue;
+    pthread_cond_t full,
+                   turn;
+    int is_full,
+        queue;
 } shared_buffer;
 
 shared_buffer *shr_buff;
