@@ -27,8 +27,6 @@ typedef struct __shared_buffer {
     pthread_cond_t end;
     int is_full;
     int is_empty;
-    int ticket;
-    int ticket_go;
 } shared_buffer;
 
 shared_buffer *shr_buff;
@@ -64,35 +62,33 @@ void funicular() {
 }
 
 void drunk(int id) {
-    int myticket;
     while (1) {
-        Pthread_mutex_lock(&shr_buff->mutex_ticket);
-        myticket = shr_buff->ticket++;
-        printf("drunk %d take ticket %d\n", id, myticket);
-        Pthread_mutex_unlock(&shr_buff->mutex_ticket);
+        Pthread_mutex_lock(&shr_buff->mutex);
+        while (shr_buff->is_full != 0 || shr_buff->is_full >= 2) {
+            //printf("drunk %d waits...\n", id);
+            Pthread_cond_wait(&shr_buff->ready, &shr_buff->mutex);
+        }
+        shr_buff->is_full += 2;
+        printf("drunk %d get on funicular\n", id);
+        Pthread_cond_signal(&shr_buff->full);
+        Pthread_cond_wait(&shr_buff->end, &shr_buff->mutex);
+        printf("drunk %d left\n", id);
+        shr_buff->is_empty -= 2;
+        Pthread_cond_signal(&shr_buff->start);
+        Pthread_mutex_unlock(&shr_buff->mutex);
     }
     return;
 }
 
 void sober(int id) {
-    int myticket;
     while (1) {
-        Pthread_mutex_lock(&shr_buff->mutex_ticket);
-        myticket = shr_buff->ticket;
-        shr_buff->ticket++;
-        printf("sober %d take ticket %d\n", id, myticket);
-        Pthread_mutex_unlock(&shr_buff->mutex_ticket);
-
         Pthread_mutex_lock(&shr_buff->mutex);
-        // wait until is not my turn, or the funicular is full or my ticket
-        // is not valid yet
-        while (myticket != shr_buff->ticket_go || shr_buff->is_full >= MAX) {
-            printf("sober %d wait...\n", id);
+        while (shr_buff->is_full >= MAX) {
+            //printf("sober %d waits...\n", id);
             Pthread_cond_wait(&shr_buff->ready, &shr_buff->mutex);
         }
+        printf("sober %d get on funicular\n", id);
         shr_buff->is_full++;
-        shr_buff->ticket_go++;
-        printf("sober %d with ticket %d get on funicular\n", id, myticket);
         // if the cabine is full then we need to signal the funicular,
         // otherwise, other passengers can enjoy the tour with us and we let
         // them know
@@ -101,9 +97,6 @@ void sober(int id) {
         } else {
             Pthread_cond_broadcast(&shr_buff->ready);
         }
-
-        // wait until the tour is ended and we signal to the funicular that we
-        // got out
         Pthread_cond_wait(&shr_buff->end, &shr_buff->mutex);
         printf("sober %d left\n", id);
         shr_buff->is_empty--;
@@ -135,8 +128,6 @@ int main(int argc, char **argv) {
     assert(shr_buff != MAP_FAILED);
     shr_buff->is_full = 0;
     shr_buff->is_empty = 0;
-    shr_buff->ticket = 0;
-    shr_buff->ticket_go = 0;
 
     Pthread_mutexattr_init(&mattr);
     Pthread_condattr_init(&cvattr);
@@ -169,6 +160,20 @@ int main(int argc, char **argv) {
             break;
         case 0:
             sober(i);
+            exit(0);
+            break;
+        default:
+            break;
+        }
+    }
+    for (i = 0; i < NUM_DRUNKS; i++) {
+        switch (fork()) {
+        case -1:
+            fprintf(stderr, "error fork\n");
+            exit(0);
+            break;
+        case 0:
+            drunk(i);
             exit(0);
             break;
         default:
