@@ -2,7 +2,8 @@ CFLAGS=-g -D_THREAD_SAFE -D_REENTRANT -D_POSIX_C_SOURCE=200112L \
 	   -D_GNU_SOURCE -I../include
 LFLAGS=-lpthread -lrt
 
-SRCS	:= ./es01-race.c
+SRCS	:= ./es01-race.c \
+	./es02-race.c
 
 OBJS	:= ${SRCS:c=o}
 PROGS	:= ${SRCS:c=exe}
