@@ -10,7 +10,6 @@ pthread_cond_t hurt;
 pthread_cond_t healed;
 pthread_cond_t all_present;
 int is_hurt = 0;
-int is_healed = 1;
 int are_all_present = 0;
 
 void *professor(void *arg) {
@@ -19,12 +18,12 @@ void *professor(void *arg) {
         sleep(4);
         Pthread_mutex_lock(&mutex);
         is_hurt = 1;
-        is_healed = 0;
-        puts("\nprofessor is hurted");
+        puts("professor is hurted");
         Pthread_cond_broadcast(&hurt);
-        while (is_healed != 1) {
+        while (is_hurt != 0) {
             Pthread_cond_wait(&healed, &mutex);
         }
+        Pthread_mutex_unlock(&mutex);
         puts("professor is healed");
         sleep(1);
     }
@@ -41,7 +40,6 @@ void *exorcist(void *arg) {
         puts("exorcist arrived");
         if (are_all_present == 2) {
             sleep(2);
-            is_healed = 1;
             is_hurt = 0;
             Pthread_cond_signal(&healed);
             Pthread_cond_signal(&all_present);
@@ -67,7 +65,6 @@ void *doctor(void *arg) {
         puts("doctor arrived");
         if (are_all_present == 2) {
             sleep(2);
-            is_healed = 1;
             is_hurt = 0;
             Pthread_cond_signal(&healed);
             Pthread_cond_signal(&all_present);
@@ -84,7 +81,6 @@ void *doctor(void *arg) {
 }
 
 int main(int argc, char **argv) {
-    int i;
     pthread_t prof;
     pthread_t exor;
     pthread_t doct;
@@ -94,10 +90,14 @@ int main(int argc, char **argv) {
     Pthread_cond_init(&all_present, NULL);
     Pthread_create(&prof, NULL, professor, NULL);
     Pthread_create(&exor, NULL, exorcist, NULL);
-    Pthread_create(&prof, NULL, doctor, NULL);
+    Pthread_create(&doct, NULL, doctor, NULL);
     Pthread_join(prof, NULL);
     Pthread_join(exor, NULL);
-    Pthread_join(prof, NULL);
-	return 0;
+    Pthread_join(doct, NULL);
+    Pthread_mutex_destroy(&mutex);
+    Pthread_cond_destroy(&hurt);
+    Pthread_cond_destroy(&healed);
+    Pthread_cond_destroy(&all_present);
+    return 0;
 }
 
