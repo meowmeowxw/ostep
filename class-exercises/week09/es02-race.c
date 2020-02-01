@@ -70,7 +70,6 @@ int main(int argc, char **argv) {
     int shmfd;
     int rc;
     int shared_seg_size = sizeof(shared_buffer);
-    pid_t pid;
     pthread_mutexattr_t mattr;
     pthread_condattr_t cvattr;
 
