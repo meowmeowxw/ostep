@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
         NULL, shared_seg_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0);
     
     shr_buff->done = 0;
-    pthread_mutexattr_init(&mattr);
-    pthread_condattr_init(&cvattr);
-    pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
-    pthread_condattr_setpshared(&cvattr, PTHREAD_PROCESS_SHARED);
+    Pthread_mutexattr_init(&mattr);
+    Pthread_condattr_init(&cvattr);
+    Pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
+    Pthread_condattr_setpshared(&cvattr, PTHREAD_PROCESS_SHARED);
     Pthread_mutex_init(&shr_buff->mutex, &mattr);
     Pthread_cond_init(&shr_buff->cond, &cvattr);
     switch (fork()) {
