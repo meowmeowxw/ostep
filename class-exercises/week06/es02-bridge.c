@@ -61,8 +61,6 @@ void *car(void *arg) {
         myticket = ++ticket[side];
         printf("car[%d]\ttake ticket %d\tpoint %c\n", id, myticket,
                point[side]);
-
-        // At the moment only one mutex without too much granularity
         queue[side]++;
         while (myticket != ticket_go[side] || !free_bridge) {
             Pthread_cond_wait(&turn[side], &mutex);
