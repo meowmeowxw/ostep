@@ -89,10 +89,10 @@ int main(int argc, char **argv) {
     shr_buff->groups[0] = 'A';
     shr_buff->groups[1] = 'B';
 
-    pthread_mutexattr_init(&mattr);
-    pthread_condattr_init(&cvattr);
-    pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
-    pthread_condattr_setpshared(&cvattr, PTHREAD_PROCESS_SHARED);
+    Pthread_mutexattr_init(&mattr);
+    Pthread_condattr_init(&cvattr);
+    Pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
+    Pthread_condattr_setpshared(&cvattr, PTHREAD_PROCESS_SHARED);
     Pthread_mutex_init(&shr_buff->mutex, &mattr);
     Pthread_mutex_init(&shr_buff->mutex_ticket, &mattr);
     Pthread_cond_init(&shr_buff->run[0], &cvattr);
