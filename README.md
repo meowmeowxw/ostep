@@ -11,5 +11,5 @@ Operating Systems: Three Easy Pieces Exercises And Projects
 
 In [Class Exercises](./class-exercises) there are exercises (with the
 assignments written in italian) of my university class on operating systems,
-mostly are about concurrency and shell scripts.
+about concurrency problems and shell (bash) scripts.
 
