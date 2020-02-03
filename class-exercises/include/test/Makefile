@@ -11,7 +11,7 @@ template-threads.exe: template-threads.o mythreads.o
 template-threads.o:	template-threads.c mythreads.h
 	${CC} ${CFLAGS} -o template-threads.o -c template-threads.c
 
-mythreads.o: mythreads.c
+mythreads.o: mythreads.c mythreads.h
 	${CC} ${CFLAGS} -o mythreads.o -c mythreads.c
 
 .PHONY: clean
