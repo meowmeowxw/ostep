@@ -1,3 +1,4 @@
+// IT'S NOT FINISHED
 #include <mythreads.h>
 #include <stdio.h>
 #include <stdlib.h>

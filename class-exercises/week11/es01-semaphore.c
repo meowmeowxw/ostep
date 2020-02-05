@@ -48,23 +48,25 @@ void *car(void *arg) {
     int myticket;
     while (1) {
         Pthread_mutex_lock(&mutex_ticket);
-        myticket = ++ticket; 
+        myticket = ++ticket;
+        printf("car %d take ticket %d\n", id, myticket);
         Pthread_mutex_unlock(&mutex_ticket);
+
         Pthread_mutex_lock(&mutex);
         while (myticket != ticket_go || light == RED) {
             Pthread_cond_wait(&empty, &mutex);
         }
         if (light == YELLOW) {
-            printf("car %d crossing with yellow\n", id);
+            printf("car %d with ticket %d crossing yellow\n", id, myticket);
             printf("ticket %d\t ticket_go %d\n", ticket, ticket_go);
         } else {
-            printf("car %d crossing with green\n", id);
+            printf("car %d with ticket %d crossing green\n", id, myticket);
             ticket_go++;
             Pthread_cond_broadcast(&empty);
         }
         Pthread_mutex_unlock(&mutex);
         printf("car %d drives around\n", id);
-        sleep(5);
+        sleep(3 + id);
     }
     return NULL;
 }
