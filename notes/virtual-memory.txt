@@ -401,3 +401,76 @@ Link: https://sploitfun.wordpress.com/2015/02/10/understanding-glibc-malloc/
 Another method is tu use a buddy allocation, the base of this allocator is to
 recursively using a binary tree find enough space for the chunks requested.
 
+--------------------------------------------------------------------------------
+Paging
+--------------------------------------------------------------------------------
+
+The first approach was to choup things up into variable-sized pieces
+(segmentation), thus it may be worth to consider a second approach: to chup up
+space into fixed-sized pieces. We call this idea paging. We divide the address
+space of a program into fixed-sized units, each of which we call a page. We view
+physical memory as an array of fixed-sized slots called page frames; each of
+these frames can contain a single virtual-memory page.
+
+Example address space:
+
+0   ---------------
+        Page 0
+16  ---------------
+        Page 1
+32  ---------------
+        Page 2
+48  ---------------
+        Page 3
+64  ---------------
+
+Example 64 byte address space in a 128 byte physical memory:
+
+0   -------------------
+        OS
+16  -------------------
+        Unused
+32  -------------------
+        Page 3 of AS
+48  -------------------
+        Page 4 of AS
+64  -------------------
+        Unused
+80  -------------------
+        Page 2 of AS
+96  -------------------
+        Unused
+112 -------------------
+        Page 1 of AS
+128 -------------------
+
+In the above examples a page is 16B large and the OS can manage the free space
+using a free list. To record where each virtual page of the address space is
+placed in physical memory, the operating system usually keeps a per-process data
+structure known as a page table. The major role of the page table is to store
+address translations for each of the virtual pages of the address space, thus
+letting us know where in physical memory each page resides.
+
+Let's do an address translation of a virtual address. To translate the address
+we need to split it into two components: the virtual page number (VPN) and the 
+offset within the page. Because the virtual address space of the process is 64
+bytes, we need 6 bits total for our virtual address (2^6 = 64). Thus our VA can
+be conceptualized as follows:
+
+VA5 | VA4 | VA3 | VA2 | VA1 | VA0
+
+Because we know the page size (16 bytes) we can divide the VA as follows:
+
+VA5 | VA4 |         VA3 | VA2 | VA1 | VA0
+VPN                     Offset
+
+Thus we have 2-bit VPN and 4 bit of offset.
+
+VA:21 = | 01 | 0101 | = 5th (0101) bbyte of virtual page 01. Then we can
+translate the VPN to the PPN (Physical Page Number). In the example above VPN 1
+corresponds to the PPN 7 = 0b111, so VA:21 = PA:0b1110101 = 117
+
+The page table has the role to store the relatives data of each page in memory,
+the simplest data structure to manage a page table is the linear page table.
+The os indexes the array by the vpn and looks up the page-table entry (PTE) at
+that index in order to find the desired physical page number (PPN or PFN).
