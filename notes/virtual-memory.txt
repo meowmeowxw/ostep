@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------------
+Address Space
+-------------------------------------------------------------------------------
+
+In a modern os there are multiple processes running on the system. Using
+scheduling policy we can virtualize the cpu, however we need to virtualize
+memory too.
+
+Why?
+
+For example we wants to implement protections, you don't want a process to be 
+read, or worse, write some other process's memory. Another feature was the
+interactivity, if you don't virtualize memory then every time the os issue a 
+context switch, then the os need to save all the information of a process in a
+physical memory and then run the other process. This process is very slow, so
+we need to find solutions to this problem.
+
+The abstraction of physical memory is called address space, and it is the
+running program's view of memory in the system.
+
+Example:
+
+0KB     -------------------
+            Program Code
+1KB     -------------------
+            Heap
+2KB     -------------------
+                |
+                v
+
+            Free
+
+                ^
+                |
+15KB    -------------------
+            Stack
+16KB    -------------------
+
