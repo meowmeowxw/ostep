@@ -58,7 +58,6 @@ memory.
 
 Example of code:
 
-```
 #include <stdio.h>
 #include <string.h>
 
@@ -73,11 +72,9 @@ int main(int argc, char **argv) {
     print(src);
 	return 0;
 }
-```
 
 disassembly of print:
 
-```
 opcodes         instructions
 
 55             push rbp
@@ -97,7 +94,6 @@ e8c0feffff     call sym.imp.printf
 90             nop
 c9             leave
 c3             ret
-```
 
 With the instructions push and pop we insert and extract instructions to/from
 the stack. 
