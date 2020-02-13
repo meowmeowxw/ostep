@@ -249,13 +249,15 @@ segment indipendently in physical memory, example:
 
 16KB    |-----------------|
         |    Not in Use
-30KB    |-----------------|
+26KB    |-----------------|
         |    Stack
+28KB    |-----------------|
+        |    Not in Use
 32KB    |-----------------|
         |    Code
 34KB    |-----------------|
         |    Heap
-40KB    |-----------------|
+37KB    |-----------------|
 
         |    Not in Use
 
@@ -269,7 +271,7 @@ Process address space:
         |    Unused
 4KB     |------------------|
         |    Heap
-10KB    |------------------|
+7KB     |------------------|
         |        |
         |        v
 
@@ -286,7 +288,7 @@ Table:
 Segment     Base    Size
 -------------------------
 Code        32K     2K
-Heap        34K     6K
+Heap        34K     3K
 Stack       28K     2K
 
 Let's suppose that we want to fetch some memory from the virtual address 4200
@@ -306,6 +308,7 @@ Since we have three segments we need the top two bit.
 00 -> Code
 01 -> Heap
 10 -> Stack
+11 -> Stack
 
 Example, if we have a 14bit virtual address, and as before we want to read the
 virtual address 4200.
@@ -335,3 +338,30 @@ segment to use and merge the heap with the code. Other systems use an implicit
 approach, if an address is generated with the program counter is on the code
 segment, if the address is based off of the stack/base pointer it must be on
 the stack, otherwise on the heap.
+
+The stack grows backwards (towords lower addresses), so in physical memory
+it starts at 28K and grows back to 26K, while in virtual memory from 16K to 14K.
+So the hardware must know which way the segment grows (a bit set to 1 if it
+grows in positive direction and 0 if it grows in negative direction).
+
+Virtual address 15KB should map to 27K in physical memory. In bit the address is
+represented as: 11 1100 0000 0000. 11 designate the segment stack, and we have
+an offset of 0xc00 = 3072 = 3K. In this case we substract from it the maximum
+size of a segment = 4K, 3K - 4K = -1K. The base is 28K, and the physical address
+is 28K - 1K = 27K.
+
+Another important feature is the technique of code sharing to share certain
+memory segments between address space. To do that the hardware needs an extra
+support in the form of protections bits, for example the code segment can be
+readable and executable, but not writable, while the stack can be readable and
+writable.
+
+With segmentation however we have a new problem, the size of a segment can
+change (ex. using sbrk), and then the physical memory will become full of little
+holes of free space, making it difficult to allocate new segments or to grow
+existing ones. We call this problem external fragmentation. There are lots of 
+algorithms to handle this problem like the best-fit, worst-fit, first-fit and
+more complex like buddy algorithm, however no perfect solution exists for this
+problem.
+
+
