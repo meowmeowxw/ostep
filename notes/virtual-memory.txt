@@ -36,3 +36,104 @@ Example:
             Stack
 16KB    -------------------
 
+In this case the stack and heap of a program can shrink at runtime, and the
+process in not loaded in physical memory 0->16KB since those addresses are
+virtualized.
+
+The goal of a virtual memory (VM) system are:
+
+1. Transparency, the os should implement virtual memory in a way that is
+invisible to the running program.
+2. Efficieny both in time and space.
+3. Protection.
+
+-------------------------------------------------------------------------------
+Memory API
+-------------------------------------------------------------------------------
+
+In running a C program, there are two types of memory that are allocated. The
+first is called stack memory, and allocations and deallocations of it are
+managed implicitly by the compiler for you. The stack is also called automatic
+memory.
+
+Example of code:
+
+```
+#include <stdio.h>
+#include <string.h>
+
+void print(char *src) {
+    char dst[64];
+    strcpy(dst, src);
+    printf("dst: %s\n", dst);
+}
+
+int main(int argc, char **argv) {
+    char src[] = "hi ostep readers!";
+    print(src);
+	return 0;
+}
+```
+
+disassembly of print:
+
+```
+opcodes         instructions
+
+55             push rbp
+4889e5         mov rbp, rsp
+4883ec50       sub rsp, 0x50
+48897db8       mov qword [src], rdi        ; arg1
+488b55b8       mov rdx, qword [src]
+488d45c0       lea rax, [dest]
+4889d6         mov rsi, rdx                ; const char *src
+4889c7         mov rdi, rax                ; char *dst
+e8c8feffff     call sym.imp.strcpy         ;
+488d45c0       lea rax, [dest]
+4889c6         mov rsi, rax
+488d3d8e0e00   lea rdi, str.dst
+b800000000     mov eax, 0
+e8c0feffff     call sym.imp.printf
+90             nop
+c9             leave
+c3             ret
+```
+
+With the instructions push and pop we insert and extract instructions to/from
+the stack. 
+With the first three isntruction we push the precedent base pointer of the main 
+function, and we "allocate" on the stack 0x50 bytes of space, so the compiler
+has increased the dimension of the stack to contain our *dst.
+At the end of the function the program issue a leave instruction which moves
+the stack pointer to the current base pointer and then it pop the base pointer.
+The last instruction is ret which pop from the stack the return address and 
+set the instruction pointer to it.
+
+Another type of memory is the heap which is created dynamically using the malloc
+instruction.
+
+int *x = (int *)malloc(sizeof(int));
+
+With this instruction we allocate on the heap the size of an int (usually 4B).
+When we don't need that space anymore we can free the heap using free:
+
+free(x);
+
+There are lots of bug around the heap, for example is always good practice to 
+check the return value of the malloc, if the dimension requested is too large
+the malloc returns NULL. Another good practice is to never reuse a variable
+after it has been freed (UAF - Use After Free bugs), or never free twice the
+same pointer (Double Free).
+
+To detect potential bugs we can use a tool called valgrind.
+
+Notes that we didn't use syscalls, but library function. At the base of the
+malloc there are two syscall:
+
+1. brk/sbrk which increase/decrease the size of the heap.
+2. mmap which can create an anonymous memory region (memory not associated with
+   any particular file) and that can be treated like a heap.
+
+Never use these two syscalls to manage the heap or the program will crash
+with the probability of 99.99%.
+
