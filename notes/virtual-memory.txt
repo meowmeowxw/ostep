@@ -809,3 +809,53 @@ process, and then use an hash table to lookup a particular VPN.
 Thus far, we have asssumed that page tables resie in kernel-owned physical
 memory, however it is possible that such page tables resides in kernel virtual
 memory to allow the system to swap some of these page tables to disk.
+
+--------------------------------------------------------------------------------
+Beyond Physical Memory: Mechanisms
+--------------------------------------------------------------------------------
+
+To support larger address spaces, the os will need a place to stash away
+portions of address spaces that currently aren't in great demand. In general,
+such locations should have more capacity than memory (RAM), as result it's
+slower, such an hard disk drive (HDD) or solide state drive (SSD).
+
+With a larger address space we don't have to worry about the space of our
+program's data structures, so the os gives the illusion to us that we have 
+infinite memory (or a lot).
+
+The first thing we will need to do is to reserve some space on the disk for
+moving pages back and forth, such space is called swap space.
+Thus, we will simply assume that the os can read from and write to the swap
+space, in page-sized units. To do so, the OS will need to remember the disk
+address of a given page. Also non-swap locations swap between HDD and RAM, for
+example a program it's stored to the disk and then is loaded into the memory.
+
+When the hardware/os looks in the PTE, it may find that the page is not present
+in physical memory (RAM). The way the os determines this is through a new piece
+of information in each page-table entry, known as the present bit. If the P bit
+is set to 0, then the page is not in memory but rather on disk somewhere. The
+act of accessing a page that is not in physical memory is called page fault.
+
+When a page fault arise, the os runs the page-fault handler.
+The OS could use the bits in the PTE normally used for data such as the PFN of
+the page for a disk address. When the os receives a page fault for a page, it
+looks in the PTE to find the address, and issues the request to disk to fetch
+the page into memory.
+When the disk I/O completes, the OS will then update the page table to mark the
+page as present, update the PFN field of the PTE to record the in-memory
+location of the newly-fetched page, and retry the instruction. This next attempt 
+may generate a TLB miss, which would then be serviced and update the TLB with
+the translation (one could alternately update the TLB when servicing the page
+fault to avoid this step). Finally, a last restart would find the translation in 
+the TLB and thus proceed to fetch the desired data or instruction from memory
+at the translated physical address.
+
+However the memory could be full and so we need to page out one or more pages
+to make room for the new page(s) the os is about to bring in using a policy.
+
+We can imagine that all this swap thing happen when we have the memory entirely
+full, however the os must keep a small amount of memory free. If the memory
+occupied is more than a certain bound then the swap daemon (a background thread)
+move the pages to the disk until the occupied memory is within the bound.
+
+
