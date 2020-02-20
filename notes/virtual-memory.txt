@@ -624,3 +624,126 @@ There is an advantage of paging, two process may share a page (ex. shrd library)
 | 50   |   100  |    1      |    rx     |   2 
 |------|--------|-----------|-----------|----------|
 
+--------------------------------------------------------------------------------
+Paging: Smaller Tables
+--------------------------------------------------------------------------------
+
+We solved the speed problem, but we still have a size problem, with a linear
+page table for each process we occupy too much space.
+
+A naive solution is to increase the page size, for example from 4KB to 16KB.
+In this way if a PTE is 4 byte, and a 18 bit VPN, we have a 1 MB per page table:
+18 bit VPN = 2^18 entries * 2^2 size = 2^20 = 1 MB.
+However, if we have 100 process we still use 100 MB of memory to handle the page
+tables, but more importantly there could be an internal fragementation: many
+space inside a page could remain unused. Thus, many system use 4KB or 8KB as
+page size. The problem is also that there are lots of page unused in the PT,
+example:
+
+PFN     Valid       prot        present     dirty
+--------------------------------------------------
+10       1          r-x           1           0
+-        0          ---           -           -
+-        0          ---           -           -
+-        0          ---           -           -
+23       1          rw-           1           1
+-        0          ---           -           -
+-        0          ---           -           -
+-        0          ---           -           -
+-        0          ---           -           -
+-        0          ---           -           -
+-        0          ---           -           -
+4        1          rw-           1           1
+
+We can try to use a combination of segmentation and paging. In segmentation we
+had a base register that told us where each segment lived in physical memory,
+and a bound or limit register that told us the size of said segment. In our
+hybrid approac we use the base not to point to the segment itself but rather to
+hold the physical address of the page table of that segment, while the bound reg
+is used to indicate the end of the page table. 
+
+Example 32-bit VA with 4KB pages, and AS splitted in four segments, even if we
+use only three of them.
+
+SEG |           VPN         |       Offset      |
+31  29                      11                  0
+
+And in this case each process have 3 page table associated, during a TLB miss
+the hardware uses the segment bits to determine which base/bounds to use.
+
+SN              = (VirtualAddress & SEG_MASK) >> SN_SHIFT
+VPN             = (VirtualAddress & VPN_MASK) >> VPN_SHIFT
+AddressOfPTE    = Base[SN] + (VPN * sizeof(PTE))
+
+The trick here, is that if the code segments is using its first three pages,
+the code segment page table will only have three entries allocated to it and the
+bounds register will be set to 3. The memory access outside the end of the seg
+will generate an exception and likely lead to the termination of the process.
+
+However this approach is not without problem:
+
+1. If we have a large but sparsely-used heap (as usual) we can still end up with
+   a lot of page table waste.
+2. Page tables now can be of arbitraty size. Thus, findind free space for them
+   in memory is more complicated (check how to manage free-space chapter).
+
+Another approach is the multi-level page tables, which attacks the same problem:
+how to get rid of all those invalid regions in the page table instead of keeping
+them all in memory?
+First chop up the page table into page-sized units; then, if an entire page of
+PTE is invalid, don’t allocate that page of the page table at all. To track
+whether a page of the page table is valid (and if valid, where it is in memory), 
+use a new structure, called the page directory. The page directory thus either
+can be used to tell you where a page of the page table is, or that the entire
+page of the page table contains no valid pages.
+
+Linear Page Table:
+
+PTBR = 201  // Page Table Base Register
+        
+            |   prot    | valid |   PFN |
+            |---------------------------|
+PFN 201     |   rx      | 1     |   12
+            |   rw      | 1     |   13
+            |   -       | 0     |   -
+            |   rw      | 1     |   100
+            |---------------------------|
+PFN 202     |   -       | 0     |   -
+            |   -       | 0     |   -
+            |   -       | 0     |   -
+            |   -       | 0     |   -
+            |---------------------------|
+PFN 203     |   -       | 0     |   -
+            |   -       | 0     |   -
+            |   -       | 0     |   -
+            |   -       | 0     |   -
+            |---------------------------|
+PFN 204     |   rx      | 1     |   103
+            |   -       | 0     |   -
+            |   rw      | 1     |   43
+            |   -       | 0     |   -
+            |---------------------------|
+
+Multi-Level Page Table:
+
+PDBR = 200  // Page Directory Base Register
+
+            -----------------               -----------------------------
+            | valid |   PFN |               |   prot    | valid |   PFN |
+            |---------------|               |-----------|---------------|
+PFN 200     | 1     |   201 ------> PFN 201 |   rx      | 1     |   12  |
+            | 0     |   -   |               |   rw      | 1     |   13  |
+            | 0     |   -   |               |   -       | 0     |   -   |
+            | 1     |   204 ----            |   rw      | 1     |   100 |
+            |---------------|  |            -----------------------------
+                               |
+                               |            -----------------------------
+                               |            |   prot    | valid |   PFN |
+                               |            |----------------------------
+                               |--> PFN 204 |   rx      | 1     |   103 |
+                                            |   -       | 0     |   -   |
+                                            |   rw      | 1     |   43  |
+                                            |   -       | 0     |   -   |
+                                            -----------------------------
+
+LoL
