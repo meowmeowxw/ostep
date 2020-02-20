@@ -747,4 +747,65 @@ PFN 200     | 1     |   201 ------> PFN 201 |   rx      | 1     |   12  |
                                             |   -       | 0     |   -   |
                                             -----------------------------
 
-LoL
+The page directory, is a simple two-level table, contains one entry per page of
+the table. The valid bit of a PDE (Page Directory Entry) means that at least one
+of the pages of the page table that the entry points to (via the PFN) is valid.
+
+Advantages:
+
+1. It's more compact and occupies less space
+2. If carefully constructed, make the handle of free memory easier for the OS.
+
+Disadvantages:
+
+1. On a TLB miss, two loads from memory will be required to get the right
+   translation information from the page table.
+2. More complex.
+
+Example Virtual Address 32-bit:
+
+-----------------------------------------------------------------
+|   Page Directory Index    |   Page Table Index    |   Other   |
+-----------------------------------------------------------------
+                Virtual Page Number                     Offset
+
+Code to translate a virtual address:
+
+VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+(Success, TlbEntry) = TLB_Lookup(VPN)
+if (Success == True) // TLB Hit
+    if (CanAccess(TlbEntry.ProtectBits) == True)
+        Offset = VirtualAddress & OFFSET_MASK
+        PhysAddr = (TlbEntry.PFN << SHIFT) | Offset
+        Register = AccessMemory(PhysAddr)
+    else
+        RaiseException(PROTECTION_FAULT)
+else // TLB Miss
+    // first, get page directory entry
+    PDIndex = (VPN & PD_MASK) >> PD_SHIFT
+    PDEAddr = PDBR + (PDIndex * sizeof(PDE))
+    PDE     = AccessMemory(PDEAddr)
+    if (PDE.Valid == False)
+        RaiseException(SEGMENTATION_FAULT)
+    else
+        // PDE is valid: now fetch PTE from page table
+        PTIndex = (VPN & PT_MASK) >> PT_SHIFT
+        PTEAddr = (PDE.PFN << SHIFT) + (PTIndex * sizeof(PTE))
+        PTE     = AccessMemory(PTEAddr)
+        if (PTE.Valid == False)
+            RaiseException(SEGMENTATION_FAULT)
+        else if (CanAccess(PTE.ProtectBits) == False)
+            RaiseException(PROTECTION_FAULT)
+        else
+            TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits)
+            RetryInstruction()
+
+Of course we can have more than two-levels and then we would have more page dir
+index.
+
+Another way to handle the page tables is to use a singe page table for all the 
+process, and then use an hash table to lookup a particular VPN.
+
+Thus far, we have asssumed that page tables resie in kernel-owned physical
+memory, however it is possible that such page tables resides in kernel virtual
+memory to allow the system to swap some of these page tables to disk.
