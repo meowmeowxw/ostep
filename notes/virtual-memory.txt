@@ -586,3 +586,41 @@ The os must reserve some bytes in the TLB to handle the trap code (or it will
 not fetch correctly and there could be a chain of tlb miss that never ends).
 The os in this way has more flexibility to use its own data structures to
 implement the page table.
+
+> What about context switches
+
+If we have two running process it's possible that (example) both are using the
+VPN 10 and the TLB will be someting like:
+
+-----------------------------------------
+| VPN  |   PFN  |   Valid   |    Prot   |
+|------|--------|-----------|-----------|
+| 10   |   100  |    1      |    rw
+| -    |   -    |    0      |    -
+| 10   |   170  |    1      |    rx
+|------|--------|-----------|-----------|
+
+Thus, we have a problem since VPN 100 could be translated with PFN 170 or 100.
+
+There are two possible solutions, or we flush the TLB entirely during a context
+switch, or we keep and Address Space Identifier (ASID) into the TLB (similar to
+the PID).
+
+----------------------------------------------------
+| VPN  |   PFN  |   Valid   |    Prot   |   ASID   |
+|------|--------|-----------|-----------|----------|
+| 10   |   100  |    1      |    rw     |   1
+| -    |   -    |    0      |    -      |   -
+| 10   |   170  |    1      |    rx     |   2
+|------|--------|-----------|-----------|----------|
+
+There is an advantage of paging, two process may share a page (ex. shrd library)
+
+----------------------------------------------------
+| VPN  |   PFN  |   Valid   |    Prot   |   ASID   |
+|------|--------|-----------|-----------|----------|
+| 10   |   100  |    1      |    rw     |   1
+| -    |   -    |    0      |    -      |   -
+| 50   |   100  |    1      |    rx     |   2 
+|------|--------|-----------|-----------|----------|
+
