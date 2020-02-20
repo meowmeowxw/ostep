@@ -858,4 +858,71 @@ full, however the os must keep a small amount of memory free. If the memory
 occupied is more than a certain bound then the swap daemon (a background thread)
 move the pages to the disk until the occupied memory is within the bound.
 
+--------------------------------------------------------------------------------
+Beyond Physical Memory: Policies
+--------------------------------------------------------------------------------
 
+Deciding which page(s) to evict is encapsulated within the replacement policy of
+the os. So we want to maximie the cache hits, in this case we consider the RAM
+as a cache. Knowing the number of cache hits and misses let us calculate the
+average memory access time (AMAT):
+
+AMAT = T_m + (P_miss * T_d)
+
+Where:
+-   T_m = Cost to access memory
+-   T_d = Cost to access disk
+-   P_miss = Probability of not finding the data in the memory.
+
+The optimal policy evic the page that will be accessed furthest in the future.
+However, we don't know what is the page that will be accessed furthest in the
+future, so we need to try something more realistic.
+
+We can try using a FIFO, so let's suppose that we have 4 pages to access (0, 1,
+2, 3). And that the 0 page is the page that need to be accessed the most.
+In this case FIFO will evict the page 0 lots of the time and will do much worse
+than an optimal policy.
+
+Another policy is simply Random, so we evict pages randomly, however this
+approach is unreliable and we would need a good random generator.
+
+As with the MLFQ in the scheduler, we can try to learn from the past, to build
+a new policy. If a page has been accessed many times, it clearly has some value.
+In this case the page is frequently accessed and we can use a LFU (Least 
+Frequently Used) policy.
+Another property is that if a page was recently accessed, than it is more likely 
+that it will be accessed again, and we can use a LRU (Least Recently Used)
+policy.
+
+Let's suppose that we want to use LRU as replacement policy. To do that upon
+each page access, we must update some data structure to move the page in front
+of the list. Another simple method would be to add to each page table the time
+entry of each page as a field, so the os simply scan all the time fields in the
+system to find the least-recently-used page. However as the number of page grows
+, the scan complexity increase, and so we need to optimize this process.
+
+We can approximate LRU. The idea requires some hardware support (as always), in
+the form of a use bit (reference bit), which is included in the page table for
+example. Whenever a page is referenced, the reference bit is set by hardware to
+1. The HW never clears the bit, though; that is the responsibility of the os.
+The os could use the clock algorithm:
+imagine all the pages of the system arranged in a circular list. A clock hand
+points to some particular page to begin with; when a replacement must occur, the
+os checks if the currently-pointed to page P has the ref bit of 1 or 0. If 1,
+this implies that page P was recently used and thus is not a good candidate for
+replacement. Thus, the use bit for P is cleared (set to 0) and the clock hand
+increments (P + 1). The algorithm continues until it finds a use bit that is set
+to 0.
+
+Another consideration of the clock algorithm is whether a page has been modified
+or not while in memory. If a page has been modified and is thus dirty, it must
+be written back to disk to evict it, which is expensive. To support this
+behavior the hardware should include a modified bit (dirty bit) which is set
+any time a page is written, and thus can be incorporated into the page-replacemt
+algorithm.
+
+When a computer's virtual memory resources are overused, the system will
+constantly be paging, this condition is called thrashing. In the early linux
+version when memory is oversubscribed, the kernel run an out-of-memory killer
+which chooses a memory-intensive process and kills it, thus reducing memory 
+overhead (very dangerous approach).
