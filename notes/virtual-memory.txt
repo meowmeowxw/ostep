@@ -470,7 +470,119 @@ VA:21 = | 01 | 0101 | = 5th (0101) bbyte of virtual page 01. Then we can
 translate the VPN to the PPN (Physical Page Number). In the example above VPN 1
 corresponds to the PPN 7 = 0b111, so VA:21 = PA:0b1110101 = 117
 
+Page tables can get terribly large, example:
+
+32 bit address space, with 4KB pages. This VA splits into 20-bit VPN and 12-bit
+offset. A 20-bit VPN implies that there are 2^20 translations that the OS would
+have to manage for each process; assuming we need 4 bytes per page-table entry
+(PTE) to hold the pjhysical translation we get an immense 4MB of memory needed
+for each page table. If there are 100 process, the OS would need 400 MB.
+
 The page table has the role to store the relatives data of each page in memory,
 the simplest data structure to manage a page table is the linear page table.
-The os indexes the array by the vpn and looks up the page-table entry (PTE) at
-that index in order to find the desired physical page number (PPN or PFN).
+The os indexes the array by the vpn and looks up the PTE at that index in order
+to find the desired physical page/frame number (PPN or PFN).
+
+PTE Example:
+
+|       PFN         |   | P | D | R | RWX | Other |
+
+PFN -> Page Frame Number
+P -> Present bit: the page could be in RAM or on the Disk (swap)
+D -> Dirty bit: check if the page has been modified
+R -> Reference bit: the page has been accessed (important in page replacemnt)
+RWX -> Permission bit: check the permission of the page
+Other -> Other
+
+Let's take as example the following instruction:
+
+mov eax, [21]
+
+And examine the explicit reference to the address 21. The system must first
+translate the virtual address (21) into the correct physical address (117). To
+do so the system must know where the process's page table is in memory. Assume
+for now that a single page-table base register contains the physical address of
+the starting location of the page table. To find the location of the desired
+PTE, the hardware will perform:
+
+VirtualAddress = 21                                     // 0b010101
+VPN_MASK = 0x30                                         // 0b110000
+SHIFT = 4                                               // # bits in the offset
+OFFSET_MASK = 15                                        // 0b001111
+VPN     = (VirtualAddress & VPN_MASK) >> SHIFT          // 01 Page Number
+PTEAddr = PageTableBaseRegister + (VPN * sizeof(PTE))
+PTE = AccessMemory(PTEAddr)
+// Check if process can access the page
+if (PTE.Valid == False)
+    RaiseException(SEGMENTATION_FAULT)
+else if (CanAccess(PTE.ProtectBits) == False)
+    RaiseException(PROTECTION_FAULT)
+else
+    // Access is OK: form physical address and fetch
+    offset = VirtualAddress & OFFSET_MASK
+    PhysAddr = (PTE.PFN << PFN_SHIFT) | offset
+    Register = AccessMemory(PhysAddr)
+
+As we can see there are lots of memory access and the page table can occupies
+lots of memory, so we need to find a better solution.
+
+--------------------------------------------------------------------------------
+TLB
+--------------------------------------------------------------------------------
+
+To speed address translation, we are going to add what is called a
+translation-lookaside buffer, or TLB. A TLB is part of the chip MMU, and is
+simply a hardware cache of popular virtual-to-physical address translations.
+Upon each virtual memory reference, the hardware first checks the TLB to see if
+the desired translation is held therein; if so, the translation is performed
+(quickly) without having to consult the page table (which has all translations).
+Because of their tremendous performance impact, TLBs in a real sense make
+virtual memory possible.
+
+Simple TLB control flow:
+
+VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+(Success, TlbEntry) = TLB_Lookup(VPN)
+// TLB Hit
+if (Success == True)
+    if (CanAccess(TlbEntry.ProtectBits) == True)
+        Offset = VirtualAddress & OFFSET_MASK
+        PhysAddr = (TlbEntry.PFN << SHIFT) | Offset
+        Register = AccessMemory(PhysAddr)
+    else
+        RaiseException(PROTECTION_FAULT)
+// TLB Miss
+else
+    PTEAddr = PTBR + (VPN * sizeof(PTE))
+    PTE = AccessMemory(PTEAddr)
+    if (PTE.Valid == False)
+        RaiseException(SEGMENTATION_FAULT)
+    else if (CanAccess(PTE.ProtectBits) == False)
+        RaiseException(PROTECTION_FAULT)
+    else
+        TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits)
+        RetryInstruction()
+
+As we can see, if we got a tlb hit we update the register (ex. mov eax, [21]),
+otherwise the hardware we'll insert inside the TLB the VPN and the
+corresponding PFN, and it will retry the instruction.
+
+> Who handle the TLB miss?
+
+In the olden days, the hardware with CISC architecture (ex. 86) handle the TLB
+miss entirely. To do this, the hardware has to know exactly where the page
+tables are located in memory (using page table base register) as well as their
+exact format. In the x86 there was an hardware-managed TLBs which uses a fixed
+multi-level page table, where the current page table was pointer by the CR3 Reg.
+
+More modern architectures (RISC, MIPS, etc) have a software-managed TLB. On a
+TLB miss, the hardware simply raises an exception which pauses the current
+instruction stream, raises the privilege level to kernel mode, and jumps to a
+trap handler. The trap handler is the code with the OS that is written for the
+purpose of handling TLB misses; when run, the code will lookup the translation
+in the page table, and uses "privileged" instructions to update the TLB, and
+return from the trap; then the hardware retries the instruction. 
+The os must reserve some bytes in the TLB to handle the trap code (or it will
+not fetch correctly and there could be a chain of tlb miss that never ends).
+The os in this way has more flexibility to use its own data structures to
+implement the page table.
