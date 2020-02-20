@@ -922,7 +922,77 @@ any time a page is written, and thus can be incorporated into the page-replacemt
 algorithm.
 
 When a computer's virtual memory resources are overused, the system will
-constantly be paging, this condition is called thrashing. In the early linux
+constantly be paging, this condition is called thrashing. In the early Linux
 version when memory is oversubscribed, the kernel run an out-of-memory killer
 which chooses a memory-intensive process and kills it, thus reducing memory 
 overhead (very dangerous approach).
+
+--------------------------------------------------------------------------------
+Complete Virtual Memory System
+--------------------------------------------------------------------------------
+
+We will study how the Linux VM works for Intel x86. Much like other modern os,
+a linux virtual address space consists of a user portion (program code,stack,
+heap) and a kernel portion (where kernel code, stacks, heap, and other parts
+reside). 
+
+0x00000000  ----------------------  |  
+                Page 0: Invalid     |
+            ----------------------  |  
+            ----------------------  |  
+                User Code           |
+            ----------------------  |  
+                User Heap           |
+            ----------------------  |  
+                    |               |
+                    |               |
+                    v               |       User
+                                    |
+                                    |
+                    ^               |
+                    |               |
+                    |               |
+            ----------------------  |  
+                User Stack          |
+            ----------------------  |  
+0xC0000000  ------------------------|-----------------
+                Kernel (Logical)    |
+            ----------------------  | 
+                Kernel (virtual)    |       Kernel
+            ----------------------  |  
+            ----------------------  |  
+
+The kernel portion is the same across processes, while the user portion changes
+with context switches. One slighlty interesting aspect of Linux is that it
+contains two types of kernel virtual addresses.
+The first are known as kernel logical addresses. This is what you would consider
+the normal virtual address space of the kernel; to get more memory of this type,
+kernel code needs to call kmalloc. Most kernel data structures live here,
+page-table, PCB, per-process kernel stacks, and so forth.
+This addresses are directly mapped to the physical memory:
+-   0xC0000000 -> 0x00000000
+-   0xC0000FFF -> 0x00000FFF, and so forth.
+
+The other type of kernel address is kernel virtual address. To get memory of
+this type, kernel code calls a different allocator, vmalloc, which return a
+pointer to a virtually contigues region of the desirezed size. The reason of
+this memory, is that it enables the kernel to address more than 1 GB of memory.
+
+x86 use a multi-level page table, however x86-64 use a four-level table,
+however the full 64-bit nture of the VA space is not yet used, but only the
+bottom 48 bit :
+
+63      47          31          15          0
+| Unused |  P1 |    P2 |   P3 | P4 | Offset |
+
+The bottom 12 bits (4 KB page size) are used as the offset, while the middle
+36 bits of VA are used for the translation.
+
+Some classical feature of the VM is that:
+
+1. VA 0 is used to catch null pointer
+2. When a process calls fork() the os simply set in the PT of the new process
+   the same PFNs of the parent in all pages. When the child will try to write on
+   some pages the os will do a copy on write (COW) and copy the pages to some
+   new physical memory.
+
