@@ -1435,8 +1435,16 @@ The bottom 12 bits (4 KB page size) are used as the offset, while the middle
 Some classical feature of the VM is that:
 
 1. VA 0 is used to catch null pointer
-2. When a process calls fork() the os simply set in the PT of the new process
-   the same PFNs of the parent in all pages. When the child will try to write on
-   some pages the os will do a copy on write (COW) and copy the pages to some
-   new physical memory.
+2. A technique called COW Copy On Write, which is implemented almost everywhere.
+   When the OS needs to copy a page from one address space to another, instead
+   of copying it, it can map it into the target address space and mark it
+   read-only in both address spaces. If both address spaces only read the page,
+   no further action is taken, and thus the OS has realized a fast copy without
+   actually moving any data.
+   If, however, one of the address spaces does indeed try to write to the page,
+   it will trap into the OS. The OS will then notice that the page is a COW
+   page, and thus (lazily) allocate a new page, fill it with the data, and map
+   this new page into the address space of the faulting process. The process
+   then continues and now has its own private copy of the page. This is useful
+   for example when calling fork() or the combination fork()/exec().
 
